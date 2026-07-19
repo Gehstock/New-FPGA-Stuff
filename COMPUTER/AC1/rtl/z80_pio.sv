@@ -4,7 +4,7 @@
 
 module z80_pio (
     input  logic        clk,
-    input  logic        clken,Impuls aus dem Top-Level)
+    input  logic        clken,
     input  logic        m1_n,
     input  logic        ba_sel,
     input  logic        cd_sel,
