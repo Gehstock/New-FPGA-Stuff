@@ -21,7 +21,7 @@ The core features a flexible address decoder managed by hardware switches and so
 
 ## 3. Video & Video Mode Expansions
 
-The video unit outputs a monochrome text display mapped from the VRAM, supporting both 64×16 and 64×32 layout formats. It integrates the **Blink and Graph Expansion (E. Ludwig, 1986)**, 
+The video unit outputs a monochrome text display mapped from the VRAM, supporting both 64Ã—16 and 64Ã—32 layout formats. It integrates the **Blink and Graph Expansion (E. Ludwig, 1986)**, 
 
 * **Blink Mode:** Automatically detects alphanumeric characters (validated via Bit 6) and flashes them.
 * **Graphic/Inverse Mode:** Dynamically inverts character pixels and forces the video engine to fetch custom block-graphic characters from alternative Font ROM banks.
@@ -41,9 +41,9 @@ The video unit outputs a monochrome text display mapped from the VRAM, supportin
 | **`SPACE`** | Space / Leertaste |
 | **`ENTER`** | Enter / Eingabetaste |
 | **`BACKSPACE`** | Backspace / Delete (`DEL`) |
-| **`�`** | Native German Umlaut **`�`** |
-| **`�`** | Native German Umlaut **`�`** |
-| **`�`** | Native German Umlaut **`�`** |
+| **`Ä`** | Native German Umlaut **`Ä`** |
+| **`Ö`** | Native German Umlaut **`Ö`** |
+| **`Ü`** | Native German Umlaut **`Ü`** |
 | **`ARROW UP`**  | Move Up |
 | **`ARROW DOWN`**  | Move Down (Automatically triggers internal Shift combo) |
 |**`ARROW RIGHT`**  | Move Right |
