@@ -1,0 +1,6 @@
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_c2.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_c3.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_d2.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_d3.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_e2.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_e3.vhdl"]
