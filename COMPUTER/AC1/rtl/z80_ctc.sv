@@ -4,7 +4,7 @@
 
 module z80_ctc (
     input  logic        clk,          
-    input  logic        clken,Impuls aus dem Top-Level)
+    input  logic        clken,
     input  logic        reset_n,      
 
     input  logic [1:0]  cs,           
