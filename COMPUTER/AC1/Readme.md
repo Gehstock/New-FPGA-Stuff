@@ -21,13 +21,13 @@ The core features a flexible address decoder managed by hardware switches and so
 
 ## 3. Video & Video Mode Expansions
 
-The video unit outputs a monochrome text display mapped from the VRAM, supporting both 64—16 and 64—32 layout formats. It integrates the **Blink and Graph Expansion (E. Ludwig, 1986)**, 
+The video unit outputs a monochrome text display mapped from the VRAM, supporting both 64—16 and 64—32 layout formats
 
 ## 4. Peripherals & Sound System
 
 * **Hardware Cores:** Standard Z80 CTC and PIO units handle system timing and I/O communication, wired together in a priority interrupt daisy-chain.
-* **Sound Generation (1987 Expansion):** Emulates the classic 1-bit audio expansion. It brings back the original "Tastenpiep" (keyclick) and retro sound effects by directly routing PIO Port B, Bit 0 to the FPGA's 1-bit `audio_out` line.
-* **Tape I/O (Cassette Interface):** Fully supports loading and saving data via a digital cassette simulation layer (`ac1_cassette_io`), allowing audio-modulated software data streams to be read and written (PIO Port B, Bit 6).
+
+* **Tape I/O (Cassette Interface):** Fully supports loading and saving data via a digital cassette simulation layer allowing audio-modulated software data streams to be read and written
 
 ### Keyboard Mapping Table
 
@@ -47,10 +47,6 @@ The video unit outputs a monochrome text display mapped from the VRAM, supportin
 | **`ARROW LEFT`**  | Move Left (Automatically triggers internal Shift combo) |
 | **`ESC`** | **Hardware NMI Break** (Executes un-blockable system break/reset) |
 
-### Special Control Features
-
-* **Hardware NMI (Break-Key):** Pressing **`ESC`** triggers a digital pulse generator that perfectly mimics the original Schmidt-Trigger RC circuit. It issues a clean, temporary **Active-Low Non-Maskable Interrupt (`NMI`)** to the Z80 CPU, executing a clean system break.
-.
 
 
 **`ToDo`**  -  Fix File Loading, Fix Audio
