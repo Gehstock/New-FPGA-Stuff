@@ -2,15 +2,13 @@
 
 This repository contains a synchronous hardware emulation of the East German 8-bit home computer **Amateurcomputer AC1** (originally published in *Funkamateur* magazine in 1984). The core has been modernized in **SystemVerilog** and extended with historical expansions from 1986/1987.
 
-The design is optimized for stable, single-clock-domain synthesis on modern FPGA hardware
-
 ---
 
 ## 1. CPU & System Clock Architecture
 
 * **Core CPU:** Driven by a fully synchronous `T80se` core, emulating the East German **U880** processor (Zilog Z80 compatible).
-* **Master Clock & Engine:** The entire design operates inside a single **12 MHz** master clock domain. This guarantees glitch-free execution across memory blocks, keyboard matrices, and video generation.
-* **CPU Execution Speed:** A synchronous fractional pulse generator scales the effective execution speed down to exactly **2 MHz** to match the original AC1 system speed.
+
+* **CPU Execution Speed**2 MHz** to match the original AC1 system speed.
 
 ## 2. Memory Configuration & ROM Modules
 
@@ -24,8 +22,6 @@ The core features a flexible address decoder managed by hardware switches and so
 The video unit outputs a monochrome text display mapped from the VRAM, supporting both 64—16 and 64—32 layout formats
 
 ## 4. Peripherals & Sound System
-
-* **Hardware Cores:** Standard Z80 CTC and PIO units handle system timing and I/O communication, wired together in a priority interrupt daisy-chain.
 
 * **Tape I/O (Cassette Interface):** Fully supports loading and saving data via a digital cassette simulation layer allowing audio-modulated software data streams to be read and written
 
