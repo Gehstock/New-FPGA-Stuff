@@ -19,8 +19,8 @@ module cocoloco_video (
     output reg  [3:0]  video_g,
     output wire [3:0]  video_b,
     
-    output wire        video_hblank,    
-    output wire        video_vblank     
+    output reg        video_hblank,    
+    output reg        video_vblank     
 );
 
     localparam H_ACTIVE_PIXELS = 256; 
@@ -30,13 +30,9 @@ module cocoloco_video (
 
     reg [8:0] h_cnt; 
     reg [8:0] v_cnt; 
+	 assign video_hsync = ~((h_cnt >= 280) && (h_cnt < 312)); 
+    assign video_vsync = ~((v_cnt >= 257) && (v_cnt < 260)); 
 
-    wire h_blank = (h_cnt >= H_ACTIVE_PIXELS);
-    wire v_blank = (v_cnt >= V_ACTIVE_LINES);
-    wire video_blank = h_blank || v_blank;
-    
-    assign video_hblank = h_blank;
-    assign video_vblank = v_blank;
 
     wire is_cpu_vram = cpu_vram_addr[13]; 
     wire [12:0] internal_addr = cpu_vram_addr[12:0];
@@ -127,8 +123,6 @@ module cocoloco_video (
         cpu_vram_q = (is_cpu_vram_reg) ? vram_cpu_combined : wram_q;
     end
 
-
-
     wire plane0_bit = p0_vid_q[h_cnt[2:0]];
     wire plane1_bit = p1_vid_q[h_cnt[2:0]];
     wire plane2_bit = p2_vid_q[h_cnt[2:0]];
@@ -136,23 +130,11 @@ module cocoloco_video (
     
     wire [3:0] pixel_color_idx = {plane3_bit, plane2_bit, plane1_bit, plane0_bit};
 
-    reg r_hsync, r_vsync, r_blank;
-    always_ff @(posedge clk) begin
-        if (clk_pix_en) begin
-            r_hsync     <= ~((h_cnt >= 280) && (h_cnt < 312)); 
-            r_vsync     <= ~((v_cnt >= 257) && (v_cnt < 260)); 
-            r_blank     <= video_blank;
-
-            video_hsync <= r_hsync;
-            video_vsync <= r_vsync;
-        end
-    end
 
     always_ff @(posedge clk) begin
         if (clk_pix_en) begin
-            if (r_blank) begin
-                video_r <= 4'h0; video_g <= 4'h0; video_b <= 4'h0;
-            end else begin
+				video_hblank <= (h_cnt >= H_ACTIVE_PIXELS);
+            video_vblank <= (v_cnt >= V_ACTIVE_LINES);
                 case (pixel_color_idx)
                     4'h0: begin video_r <= 4'h0; video_g <= 4'h0; video_b <= 4'h0; end
                     4'h1: begin video_r <= 4'hF; video_g <= 4'hF; video_b <= 4'h0; end
@@ -171,7 +153,6 @@ module cocoloco_video (
                     4'hE: begin video_r <= 4'hF; video_g <= 4'hF; video_b <= 4'hF; end
                     4'hF: begin video_r <= 4'hA; video_g <= 4'hA; video_b <= 4'hF; end
                 endcase
-            end
         end
     end
 
