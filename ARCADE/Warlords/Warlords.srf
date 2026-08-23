@@ -1,0 +1,16 @@
+{ "" "" "" "Found clock multiplexer centipede:centipede\|T65:T65\|Mux64" {  } {  } 0 19017 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Inferred dual-clock RAM node \"video_mixer:video_mixer\|osd:osd\|osd_buffer_rtl_0\" from synchronous design logic.  The read-during-write behavior of a dual-clock RAM is undefined and may not match the behavior of the original design." {  } {  } 0 276027 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Inferred dual-clock RAM node \"centipede:centipede\|pf_ram:pf_ram\|dpram:ram0\|ram_q_rtl_0\" from synchronous design logic.  The read-during-write behavior of a dual-clock RAM is undefined and may not match the behavior of the original design." {  } {  } 0 276027 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Verilog HDL information at scandoubler.v(113): always construct contains both blocking and non-blocking assignments" {  } {  } 0 10268 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Design contains 1 input pin(s) that do not drive logic" {  } {  } 0 21074 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Some pins have incomplete I/O assignments. Refer to the I/O Assignment Warnings report for details" {  } {  } 0 15714 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "6 pins must meet Altera requirements for 3.3-, 3.0-, and 2.5-V interfaces. For more information, refer to AN 447: Interfacing Cyclone III Devices with 3.3/3.0/2.5-V LVTTL/LVCMOS I/O Systems." {  } {  } 0 169177 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "PCI-clamp diode is not supported in this mode. The following 1 pins must meet the Altera requirements for 3.3V, 3.0V, and 2.5V interfaces if they are connected to devices other than the supported configuration devices. In these cases, Altera recommends termination method as specified in the Application Note 447." {  } {  } 0 169203 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "PLL \"pll:pll\|altpll:altpll_component\|pll_altpll:auto_generated\|pll1\" has parameters clk4_multiply_by and clk4_divide_by specified but port CLK\[4\] is not connected" {  } {  } 0 15899 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Output pins are stuck at VCC or GND" {  } {  } 0 13024 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "16 hierarchies have connectivity warnings - see the Connectivity Checks report folder" {  } {  } 0 12241 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "*" {  } {  } 0 10230 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "*" {  } {  } 0 10036 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "*" {  } {  } 0 276027 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "*" {  } {  } 0 10273 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "*" {  } {  } 0 19016 "" 0 0 "Quartus II" 0 -1 0 ""}
