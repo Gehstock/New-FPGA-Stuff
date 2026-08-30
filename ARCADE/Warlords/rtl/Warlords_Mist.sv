@@ -13,6 +13,8 @@ module Warlords_Mist (
     input  logic        SPI_SS2,
     input  logic        SPI_SS3,
     input  logic        CONF_DATA0,
+    output logic        UART_TX,
+    input  logic        UART_RX,
     input  logic        CLOCK_27
 );
 
@@ -24,13 +26,13 @@ module Warlords_Mist (
         "O6,Joystick Swap,Off,On;",
         "O7,Test,Off,On;",
         "O9,Cabinet Type,Cocktail,Upright;",
-        "OAD,Credits,1p/2p=1cr,1p=1 2p=2,1p/2p=2cr,2p=2cr;",
-        "OE,Music,Endgame,Highscore;",
-        "OFI,Language,EN,FR,ES,DE;", 
-        "O12,Coinage,Free Play,1C_2C,1C_1C,2C_1C;",
-        "OJK,Right Coin,*1,*4,*5,*6;",
-        "OL,Left Coin,*1,*2;",
-        "OMN,Bonus Coins,None,3cr/2c,5cr/4c,6cr/4c,6cr/5c;",
+        "OAD,Credits,1p/2p=1cr,1p=1 2p=2,1p/2p=2cr,2p=2cr;", // DSW1 Bits 5:4 -> status[13:10]
+        "OE,Music,Endgame,Highscore;",                      // DSW1 Bit 2   -> status[14]
+        "OFI,Language,EN,FR,ES,DE;",                        // DSW1 Bits 1:0 -> status[18:15]
+        "O12,Coinage,Free Play,1C_2C,1C_1C,2C_1C;",         // DSW2 Bits 1:0 -> status[2:1] - Free Play ist jetzt 00
+        "OJK,Right Coin,*1,*4,*5,*6;",                      // DSW2 Bits 3:2 -> status[20:19]
+        "OL,Left Coin,*1,*2;",                              // DSW2 Bit 4   -> status[21]
+        "OMN,Bonus Coins,None,3cr/2c,5cr/4c,6cr/4c,6cr/5c;",// DSW2 Bits 7:5 -> status[24:22]
         "T0,Reset;",
         "V,v1.00.", `BUILD_DATE
     };

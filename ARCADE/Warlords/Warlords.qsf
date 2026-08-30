@@ -71,6 +71,8 @@ set_location_assignment PIN_110 -to VGA_G[1]
 set_location_assignment PIN_106 -to VGA_G[0]
 set_location_assignment PIN_136 -to VGA_VS
 set_location_assignment PIN_119 -to VGA_HS
+set_location_assignment PIN_46 -to UART_TX
+set_location_assignment PIN_31 -to UART_RX
 set_location_assignment PIN_65 -to AUDIO_L
 set_location_assignment PIN_80 -to AUDIO_R
 set_location_assignment PIN_105 -to SPI_DO
@@ -149,7 +151,6 @@ set_global_assignment -name SYSTEMVERILOG_FILE rtl/Warlords_Mist.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/warlords_top.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/warlords_cpu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/warlords_video.sv
-set_global_assignment -name SYSTEMVERILOG_FILE rtl/warlords_playfield.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/warlords_sound.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/pf_ram.sv
 set_global_assignment -name VERILOG_FILE rtl/spram.v

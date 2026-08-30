@@ -18,6 +18,7 @@ module warlords_top (
     output logic [5:0]   Audio
 );
 
+
     logic [11:0] Hcnt;
     logic [7:0]  Vcnt;
     logic [23:0] Ab;

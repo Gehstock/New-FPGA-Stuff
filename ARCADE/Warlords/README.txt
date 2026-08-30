@@ -1,3 +1,3 @@
 Arcade: Atari Warlords port to MiST by Gehstock
 
-Status 95% Missing  Motion Objects
+23 August 2026
