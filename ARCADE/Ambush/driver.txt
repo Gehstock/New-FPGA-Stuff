@@ -1,0 +1,407 @@
+
+void ambush_state::main_map(address_map &map)
+{
+	map(0x0000, 0x7fff).rom();
+	map(0x8000, 0x87ff).ram();
+	map(0xa000, 0xa000).r("watchdog", FUNC(watchdog_timer_device::reset_r));
+	map(0xc000, 0xc07f).ram();
+	map(0xc080, 0xc09f).ram().w(FUNC(ambush_state::scroll_ram_w)).share(m_scroll_ram);  // 1 byte for each column
+	map(0xc0a0, 0xc0ff).ram();
+	map(0xc100, 0xc1ff).ram().share(m_attribute_ram);  // 1 line corresponds to 4 in the video ram
+	map(0xc200, 0xc3ff).ram().share(m_sprite_ram);
+	map(0xc400, 0xc7ff).ram().share(m_video_ram);
+	map(0xc800, 0xc800).portr("SW1");
+	map(0xcc00, 0xcc07).w(FUNC(ambush_state::output_latches_w));
+}
+
+void ambush_state::main_portmap(address_map &map)
+{
+	map.global_mask(0xff);
+	map(0x00, 0x00).rw("ay1", FUNC(ay8910_device::data_r), FUNC(ay8910_device::address_w));
+	map(0x01, 0x01).w("ay1", FUNC(ay8910_device::data_w));
+	map(0x80, 0x80).rw("ay2", FUNC(ay8910_device::data_r), FUNC(ay8910_device::address_w));
+	map(0x81, 0x81).w("ay2", FUNC(ay8910_device::data_w));
+}
+
+
+
+
+void ambush_state::register_save_states()
+{
+	save_item(NAME(m_color_bank));
+}
+
+MACHINE_START_MEMBER( ambush_state, ambush )
+{
+	register_save_states();
+
+	// create character tilemap
+	m_char_tilemap = &machine().tilemap().create(*m_gfxdecode, tilemap_get_info_delegate(*this, FUNC(ambush_state::ambush_char_tile_info)), TILEMAP_SCAN_ROWS, 8, 8, 32, 32);
+	m_char_tilemap->set_transparent_pen(0);
+	m_char_tilemap->set_scroll_cols(32);
+}
+
+
+
+template <uint8_t Which>
+void ambush_state::coin_counter_w(int state)
+{
+	machine().bookkeeping().coin_counter_w(Which, state);
+}
+
+void ambush_state::output_latches_w(offs_t offset, uint8_t data)
+{
+	m_outlatch[0]->write_bit(offset, BIT(data, 0));
+	m_outlatch[1]->write_bit(offset, BIT(data, 1));
+}
+
+
+
+
+void ambush_state::ambush_base(machine_config &config)
+{
+	z80_device &maincpu(Z80(config, "maincpu", XTAL(18'432'000) / 6));
+	maincpu.set_addrmap(AS_PROGRAM, &ambush_state::main_map);
+	maincpu.set_addrmap(AS_IO, &ambush_state::main_portmap);
+	maincpu.set_vblank_int("screen", FUNC(ambush_state::irq0_line_hold));
+
+	WATCHDOG_TIMER(config, "watchdog");
+
+	MCFG_MACHINE_START_OVERRIDE(ambush_state, ambush)
+
+	// video hardware
+	screen_device &screen(SCREEN(config, "screen"));
+	screen.set_raw(XTAL(18'432'000) / 3, 384, 0, 256, 264, 16, 240);
+	screen.set_screen_update(FUNC(ambush_state::screen_update));
+	screen.set_palette("palette");
+
+	GFXDECODE(config, m_gfxdecode, "palette", gfx_ambush);
+
+	PALETTE(config, "palette", FUNC(ambush_state::ambush_palette), 256);
+
+	// sound hardware
+	SPEAKER(config, "mono").front_center();
+	ay8912_device &ay1(AY8912(config, "ay1", XTAL(18'432'000) / 6 / 2));
+	ay1.port_a_read_callback().set_ioport("BUTTONS");
+	ay1.add_route(ALL_OUTPUTS, "mono", 0.33);
+
+	ay8912_device &ay2(AY8912(config, "ay2", XTAL(18'432'000) / 6 / 2));
+	ay2.port_a_read_callback().set_ioport("JOYSTICK");
+	ay2.add_route(ALL_OUTPUTS, "mono", 0.33);
+}
+
+void ambush_state::ambush(machine_config &config)
+{
+	ambush_base(config);
+
+	// addressable latches at 8B and 8C
+	LS259(config, m_outlatch[0]);
+	m_outlatch[0]->q_out_cb<4>().set(FUNC(ambush_state::flip_screen_set));
+	m_outlatch[0]->q_out_cb<5>().set(FUNC(ambush_state::color_bank_1_w));
+	m_outlatch[0]->q_out_cb<7>().set(FUNC(ambush_state::coin_counter_w<0>));
+
+	LS259(config, m_outlatch[1]);
+	m_outlatch[1]->q_out_cb<5>().set(FUNC(ambush_state::color_bank_2_w));
+	m_outlatch[1]->q_out_cb<7>().set(FUNC(ambush_state::coin_counter_w<1>));
+}
+
+
+ROM_START( ambush )
+	ROM_REGION(0x8000, "maincpu", 0)
+	ROM_LOAD("a1.i7", 0x0000, 0x2000, CRC(31b85d9d) SHA1(24e60d053cf70ea15430d970ac2385bdd7341ab1))
+	ROM_LOAD("a2.g7", 0x2000, 0x2000, CRC(8328d88a) SHA1(690f0af10a0550566b67ee570f849b2764448d15))
+	ROM_LOAD("a3.f7", 0x4000, 0x2000, CRC(8db57ab5) SHA1(5cc7d7ebdfc91fb8d9ed52836d70c1de68001402))
+	ROM_LOAD("a4.e7", 0x6000, 0x2000, CRC(4a34d2a4) SHA1(ad623161cd6031cb6503ff7445fdd9fb4ea83c8c))
+
+	ROM_REGION(0x4000, "gfx1", 0)
+	ROM_LOAD("fa1.m4", 0x0000, 0x2000, CRC(ad10969e) SHA1(4cfccdc4ca377693e92d77cde16f88bbdb840b38))
+	ROM_LOAD("fa2.n4", 0x2000, 0x2000, CRC(e7f134ba) SHA1(c38321f3da049f756337cba5b3c71f6935922f80))
+
+	ROM_REGION(0x200, "colors", 0)
+	ROM_LOAD("a.bpr", 0x000, 0x100, CRC(5f27f511) SHA1(fe3ae701443ff50d3d03c0a5d0e0ab0e716b05cc))
+	ROM_LOAD("b.bpr", 0x100, 0x100, CRC(1b03fd3b) SHA1(1a58b212476cacace6065056f23b59a69053a2f6))
+
+	ROM_REGION(0x200, "proms", 0)
+	ROM_LOAD("13.bpr", 0x000, 0x100, CRC(547e970f) SHA1(e2ec0bece49fb283e43549703d6d5d6f561c69a6))
+	ROM_LOAD("14.bpr", 0x100, 0x100, CRC(622a8ce7) SHA1(6834f67874251f2ef3a33aec893311f5d10e496f))
+ROM_END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static INPUT_PORTS_START( ambush )
+	PORT_START("BUTTONS")
+	PORT_BIT(0x01, IP_ACTIVE_LOW, IPT_BUTTON2)
+	PORT_BIT(0x02, IP_ACTIVE_LOW, IPT_BUTTON1)
+	PORT_BIT(0x04, IP_ACTIVE_LOW, IPT_BUTTON2)  PORT_COCKTAIL
+	PORT_BIT(0x08, IP_ACTIVE_LOW, IPT_BUTTON1)  PORT_COCKTAIL
+	PORT_BIT(0x10, IP_ACTIVE_LOW, IPT_START2)
+	PORT_BIT(0x20, IP_ACTIVE_LOW, IPT_START1)
+	PORT_BIT(0x40, IP_ACTIVE_LOW, IPT_COIN2)
+	PORT_BIT(0x80, IP_ACTIVE_LOW, IPT_COIN1)
+
+	PORT_START("JOYSTICK")
+	PORT_BIT(0x01, IP_ACTIVE_LOW, IPT_JOYSTICK_UP)     PORT_8WAY
+	PORT_BIT(0x02, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN)   PORT_8WAY
+	PORT_BIT(0x04, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT)   PORT_8WAY
+	PORT_BIT(0x08, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT)  PORT_8WAY
+	PORT_BIT(0x10, IP_ACTIVE_LOW, IPT_JOYSTICK_UP)     PORT_8WAY  PORT_COCKTAIL
+	PORT_BIT(0x20, IP_ACTIVE_LOW, IPT_JOYSTICK_DOWN)   PORT_8WAY  PORT_COCKTAIL
+	PORT_BIT(0x40, IP_ACTIVE_LOW, IPT_JOYSTICK_LEFT)   PORT_8WAY  PORT_COCKTAIL
+	PORT_BIT(0x80, IP_ACTIVE_LOW, IPT_JOYSTICK_RIGHT)  PORT_8WAY  PORT_COCKTAIL
+
+	PORT_START("SW1")
+	PORT_DIPNAME(0x03, 0x00, DEF_STR( Lives ))           PORT_DIPLOCATION("SW1:1,2")
+	PORT_DIPSETTING(   0x00, "3")
+	PORT_DIPSETTING(   0x01, "4")
+	PORT_DIPSETTING(   0x02, "5")
+	PORT_DIPSETTING(   0x03, "6")
+	PORT_DIPNAME(0x1c, 0x00, DEF_STR( Coinage ))         PORT_DIPLOCATION("SW1:3,4,5")
+	PORT_DIPSETTING(   0x10, DEF_STR( 2C_1C ))
+	PORT_DIPSETTING(   0x00, DEF_STR( 1C_1C ))
+	PORT_DIPSETTING(   0x14, DEF_STR( 2C_3C ))
+	PORT_DIPSETTING(   0x04, DEF_STR( 1C_2C ))
+	PORT_DIPSETTING(   0x18, DEF_STR( 2C_5C ))
+	PORT_DIPSETTING(   0x08, DEF_STR( 1C_3C ))
+	PORT_DIPSETTING(   0x0c, DEF_STR( 1C_4C ))
+	PORT_DIPSETTING(   0x1c, "Service Mode/Free Play")
+	PORT_DIPNAME(0x20, 0x00, DEF_STR( Difficulty ))      PORT_DIPLOCATION("SW1:6")
+	PORT_DIPSETTING(   0x00, DEF_STR( Easy ))
+	PORT_DIPSETTING(   0x20, DEF_STR( Hard ))
+	PORT_DIPNAME(0x40, 0x40, DEF_STR( Bonus_Life ))      PORT_DIPLOCATION("SW1:7")
+	PORT_DIPSETTING(   0x40, "80000")
+	PORT_DIPSETTING(   0x00, "120000")
+	PORT_DIPNAME(0x80, 0x80, DEF_STR( Cabinet ))         PORT_DIPLOCATION("SW1:8")
+	PORT_DIPSETTING(   0x80, DEF_STR( Upright ))
+	PORT_DIPSETTING(   0x00, DEF_STR( Cocktail ))
+INPUT_PORTS_END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void ambush_state::ambush_palette(palette_device &palette) const
+{
+	uint8_t const *const color_prom = memregion("colors")->base();
+
+	for (int i = 0; i < palette.entries(); i++)
+	{
+		int bit0, bit1, bit2;
+
+		// red component
+		bit0 = BIT(color_prom[i], 0);
+		bit1 = BIT(color_prom[i], 1);
+		bit2 = BIT(color_prom[i], 2);
+		int const r = 0x21 * bit0 + 0x47 * bit1 + 0x97 * bit2;
+
+		// green component
+		bit0 = BIT(color_prom[i], 3);
+		bit1 = BIT(color_prom[i], 4);
+		bit2 = BIT(color_prom[i], 5);
+		int const g = 0x21 * bit0 + 0x47 * bit1 + 0x97 * bit2;
+
+		// blue component
+		bit0 = BIT(color_prom[i], 6);
+		bit1 = BIT(color_prom[i], 7);
+		int const b = 0x52 * bit0 + 0xad * bit1;
+
+		palette.set_pen_color(i, rgb_t(r, g, b));
+	}
+}
+
+
+
+uint32_t ambush_state::screen_update(screen_device &screen, bitmap_ind16 &bitmap, const rectangle &cliprect)
+{
+	bitmap.fill(0, cliprect);
+
+	// always draw all tiles
+	m_char_tilemap->mark_all_dirty();
+
+	// draw the background characters
+	m_char_tilemap->draw(screen, bitmap, cliprect, TILEMAP_DRAW_OPAQUE | TILEMAP_DRAW_ALL_CATEGORIES, 0);
+
+	// draw the sprites
+	for (int offs = m_sprite_ram.bytes() - 4; offs >= 0; offs -= 4)
+	{
+		// 0  76653210  Y coordinate
+		// 1  7-------  Flip Y
+		// 1  -6------  Flip X
+		// 1  --543210  Code low bits
+		// 2  7-------  Size (1 = 16x16, 0 = 8x8)
+		// 2  -65-----  Code high bits
+		// 2  ---4----  Wrap allowed? (1 = wrap right, 0 = wrap left)
+		// 2  ----3210  Color
+		// 3  76653210  X coordinate
+
+		int sx = m_sprite_ram[offs + 3];
+		int sy = m_sprite_ram[offs + 0];
+		int const wrap = BIT(m_sprite_ram[offs + 2], 4);
+
+		// sprite disabled?
+		if (sy == 0x00 || sy == 0xff)
+			continue;
+
+		// prevent wraparound
+		if (((sx < 0x40) && wrap) || ((sx >= 0xc0) && !wrap))
+			continue;
+
+		int const gfx = BIT(m_sprite_ram[offs + 2], 7);
+		int code = ((m_sprite_ram[offs + 2] & 0x60) << 1) | (m_sprite_ram[offs + 1] & 0x3f);
+
+		if (gfx == 1)
+		{
+			// 16x16 sprites
+			if (!flip_screen())
+				sy = 240 - sy;
+			else
+				sx = 240 - sx;
+		}
+		else
+		{
+			// 8x8 sprites
+			code <<= 2;
+
+			if (!flip_screen())
+				sy = 248 - sy;
+			else
+				sx = 248 - sx;
+		}
+
+		int flipx = BIT(m_sprite_ram[offs + 1], 6);
+		int flipy = BIT(m_sprite_ram[offs + 1], 7);
+
+		if (flip_screen())
+		{
+			flipx = !flipx;
+			flipy = !flipy;
+		}
+
+		int const color = (m_color_bank << 4) | (m_sprite_ram[offs + 2] & 0x0f);
+
+		m_gfxdecode->gfx(gfx)->transpen(bitmap, cliprect, code, color, flipx, flipy, sx, sy, 0);
+	}
+
+	// draw the foreground priority characters with transparency over the sprites
+	m_char_tilemap->draw(screen, bitmap, cliprect, 1, 0);
+
+	return 0;
+}
+
+
+
+void ambush_state::scroll_ram_w(offs_t offset, uint8_t data)
+{
+	m_scroll_ram[offset] = data;
+	m_char_tilemap->set_scrolly(offset, data + 1);
+}
+
+void ambush_state::color_bank_1_w(int state)
+{
+	m_color_bank = (m_color_bank & 0x02) | (state ? 0x01 : 0x00);
+}
+
+void ambush_state::color_bank_2_w(int state)
+{
+	m_color_bank = (m_color_bank & 0x01) | (state ? 0x02 : 0x00);
+}
+
+
+
+
+static const gfx_layout spritelayout =
+{
+	16,16,
+	RGN_FRAC(1,2), // 256 sprites
+	2,
+	{ RGN_FRAC(1,2), RGN_FRAC(0,2) },
+	{     0,     1,     2,     3,     4,     5,     6,     7,
+		8*8+0, 8*8+1, 8*8+2, 8*8+3, 8*8+4, 8*8+5, 8*8+6, 8*8+7 },
+	{  0*8,  1*8,  2*8,  3*8,  4*8,  5*8,  6*8,  7*8,
+		16*8, 17*8, 18*8, 19*8, 20*8, 21*8, 22*8, 23*8 },
+	32*8
+};
+
+static GFXDECODE_START( gfx_ambush )
+	GFXDECODE_ENTRY("gfx1", 0, gfx_8x8x2_planar, 0, 64)
+	GFXDECODE_ENTRY("gfx1", 0, spritelayout,     0, 64)
+GFXDECODE_END
+
+
+
+TILE_GET_INFO_MEMBER(ambush_state::ambush_char_tile_info)
+{
+	uint8_t const attr = m_attribute_ram[((tile_index >> 2) & 0xe0) | (tile_index & 0x1f)];
+
+	// 7-------  Unused
+	// -65-----  Code high bits
+	// ---4----  Priority
+	// ----3210  Color
+
+	int const code = ((attr & 0x60) << 3) | m_video_ram[tile_index];
+	int const color = (m_color_bank << 4) | (attr & 0x0f);
+	tileinfo.category = BIT(attr, 4);
+
+	tileinfo.set(0, code, color, 0);
+}
+
+
+
