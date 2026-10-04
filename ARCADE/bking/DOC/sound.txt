@@ -1,0 +1,58 @@
+AY1  Chip 6E
+
+BC2	+5V
+BDIR	1Y on Chip 5C
+BC1	2Y on Chip 5C
+CK	CLKn
+A9n	Addr[1]
+A8	not Addr[2]
+RESET	RESET
+
+------------------------------------------------
+
+AY2  Chip 6G
+
+BC2	+5V
+BDIR	1Y on Chip 5C
+BC1	2Y on Chip 5C
+CK	CLKn
+A9n	Addr[2]
+A8	Addr[1]
+RESET	RESET
+
+------------------------------------------------
+
+CHIP 5C	- 74LS153
+1Gn	GND
+2Gn	GND
+A	Addr[0]
+B	CS5n
+
+1Y	AY BDIR
+2Y	AY BC1
+
+1C0	not WRn
+1C1	not WRn
+1C2	GND
+1C3	GND
+
+2C0	not RDn
+2C1	not RDn
+2C2	GND
+2C3	GND
+
+----------------------------------------------
+
+CS5 GEN
+Chip 2E - 74LS138
+
+A	Addr[10]
+B	Addr[11]
+C	GND
+G1	+5V
+G2A	???   not Clear
+G2B	GND
+
+Y0	CS4n
+Y1	CS5n
+Y2	CS6n

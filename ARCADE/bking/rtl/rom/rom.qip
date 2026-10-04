@@ -1,0 +1,22 @@
+
+# Color PROMs and Collision Detection
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "prom_col.vhd"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "prom_coll_detect.vhd"]
+
+# Graphics and Sprite ROMs
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_ball1.vhd"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_ball2.vhd"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_crow.vhd"]
+
+# Tile / Playfield Graphics ROMs
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_gfx1.vhd"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_gfx2.vhd"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_gfx3.vhd"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_gfx4.vhd"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_gfx5.vhd"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_gfx6.vhd"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_playfield.vhd"]
+
+# Sound CPU ROMs
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_snd_1.vhd"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "rom_snd_2.vhd"]
