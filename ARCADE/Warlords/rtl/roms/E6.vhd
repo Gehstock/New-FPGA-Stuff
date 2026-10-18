@@ -3,9 +3,11 @@ use ieee.std_logic_1164.all,ieee.numeric_std.all;
 
 entity E6 is
 port (
-	clk  : in  std_logic;
-	addr : in  std_logic_vector(10 downto 0);
-	data : out std_logic_vector(7 downto 0)
+	clk    : in  std_logic;
+	addr_a : in  std_logic_vector(10 downto 0);
+	data_a : out std_logic_vector(7 downto 0);
+	addr_b : in  std_logic_vector(10 downto 0);
+	data_b : out std_logic_vector(7 downto 0)
 );
 end entity;
 
@@ -141,10 +143,11 @@ architecture prom of E6 is
 		X"30",X"F8",X"0D",X"04",X"10",X"07",X"23",X"00",X"8E",X"29",X"40",X"10",X"30",X"20",X"80",X"00",
 		X"80",X"40",X"20",X"18",X"00",X"00",X"00",X"00",X"00",X"00",X"00",X"00",X"00",X"00",X"00",X"00");
 begin
-process(clk)
-begin
-	if rising_edge(clk) then
-		data <= rom_data(to_integer(unsigned(addr)));
-	end if;
-end process;
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			data_a <= rom_data(to_integer(unsigned(addr_a)));
+			data_b <= rom_data(to_integer(unsigned(addr_b)));
+		end if;
+	end process;
 end architecture;

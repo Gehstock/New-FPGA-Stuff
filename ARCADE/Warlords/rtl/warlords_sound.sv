@@ -12,11 +12,8 @@ module warlords_sound (
     output logic [5:0]  Audio
 );
 
-    logic [3:0] Ch0;
-    logic [3:0] Ch1;
-    logic [3:0] Ch2;
-    logic [3:0] Ch3;
-    logic [7:0] PaddleBus;
+    logic [3:0] Ch0, Ch1, Ch2, Ch3;   
+    logic [7:0] PaddleBus, PaddleReg;
     logic       Potreset;
     logic [16:0] Speeddiv;
     logic [3:0][7:0] Paddlepos; 
@@ -33,10 +30,10 @@ module warlords_sound (
 
     always_ff @(posedge Clk12 or posedge Reset) begin
         if (Reset) begin
-            Paddlepos <= 8'd114;
-            Paddlepos <= 8'd114;
-            Paddlepos <= 8'd114;
-            Paddlepos <= 8'd114;
+            Paddlepos[0] <= 8'd114;
+            Paddlepos[1] <= 8'd114;
+            Paddlepos[2] <= 8'd114;
+            Paddlepos[3] <= 8'd114;
         end else if (Speeddiv == '0) begin
             for (int i = 0; i < 4; i++) begin
                 if (JoyLeft[i] && Paddlepos[i] > 8'd0) begin
@@ -66,18 +63,26 @@ module warlords_sound (
         end
     end
 
-    always_comb begin
-        PaddleBus = 8'h00;
-        if (Scanactive) begin
-            for (int i = 0; i < 4; i++) begin
-                if (Chargetimer >= Paddlepos[i]) begin
-                    PaddleBus[i] = 1'b1;
+    always_ff @(posedge Clk12 or posedge Reset) begin
+        if (Reset) begin
+            PaddleReg <= 8'h00;
+        end else if (Phi0) begin
+            if (Potreset) begin
+                PaddleReg <= 8'h00;
+            end else begin
+                PaddleReg[7:4] <= 4'hF; 
+                for (int i = 0; i < 4; i++) begin
+                    if (Scanactive && (Chargetimer >= Paddlepos[i])) begin
+                        PaddleReg[i] <= 1'b1;
+                    end
                 end
             end
         end
     end
 
-    POKEY Pokeychip1 ( 
+    assign PaddleBus = PaddleReg;
+
+    POKEY Pokey ( 
         .CLK            		( Clk12 ),
         .ENABLE_179     		( Phi0 ),
         .ADDR           		( Addr ),

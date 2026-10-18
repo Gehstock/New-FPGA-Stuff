@@ -62,7 +62,7 @@ module Warlords_Mist (
         .inclk0         ( CLOCK_27 ),
         .areset         ( 1'b0 ),
         .c0             ( clk_24 ),
-        .c2             ( clk_12 )
+        .c1             ( clk_12 )
     );
 
     logic        key_pressed;
