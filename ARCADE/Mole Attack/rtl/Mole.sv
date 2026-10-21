@@ -21,9 +21,7 @@ module Mole(
 
 localparam CONF_STR = {
 	"Mole;;",
-//	"O2,Rotate Controls,Off,On;",
 	"O34,Scanlines,Off,25%,50%,75%;",
-//	"O5,Blend,Off,On;",
 	"O6,Passing Point,300,400;",
 	"O7,Coinage,1C_1C,1C_2C;",
 	"O8,Cabinet,Upright,Cocktail;",
@@ -45,7 +43,7 @@ wire clk_sys, clk_fpga;
 pll pll(
 	.inclk0(CLOCK_27),
 	.c0(clk_fpga),//40
-	.c1(clk_sys)//4
+	.c1(clk_sys)//20
 );
 
 wire [31:0] status;
@@ -144,7 +142,6 @@ dac #(.C_bits(10))dac_l(
 	.dac_i(audio),
 	.dac_o(AUDIO_L)
 	);
-
 
 
 endmodule

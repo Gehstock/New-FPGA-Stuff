@@ -40,5 +40,3 @@ System Controls
 • Player 2 Start: 2
 
 
-
-ToDo: Sound

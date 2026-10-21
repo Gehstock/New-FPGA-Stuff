@@ -1,7 +1,6 @@
 module mole_top (
     input  logic        clk_sys,
     input  logic        rst_n,
-    
     input  logic [9:1]  p1_buttons,
     input  logic [9:1]  p2_buttons,
     input  logic        cabinet,
@@ -9,7 +8,6 @@ module mole_top (
     input  logic        start1_button,
     input  logic        start2_button,
     input  logic [7:0]  dip_switches,
-    
     output logic        video_hs,
     output logic        video_vs,
     output logic        video_r,
@@ -20,7 +18,7 @@ module mole_top (
     output logic [9:0]  audio
 );
 
-    // Alle internen Deklarationen sauber an den Anfang gesetzt
+
     logic        tile_bank;    
     logic        video_flip;   
     logic [3:0]  clk_div;
@@ -29,11 +27,9 @@ module mole_top (
     logic [7:0]  cpu_din;
     logic [7:0]  cpu_dout;
     logic        cpu_rw_n;
-    logic        cpu_irq_n;
-    
+    logic        cpu_irq_n;   
     logic        video_vb_reg;
     logic        irq_pending;
-
     logic [7:0]  ram_dout;
     logic [7:0]  rom1_data;
     logic [7:0]  rom2_data;
@@ -43,7 +39,6 @@ module mole_top (
     logic [7:0]  sound_dout;
     logic        sound_ack;
     logic [7:0]  protection_dout;
-
     logic        is_ram;
     logic        is_protection;
     logic        is_tileram;
@@ -53,7 +48,6 @@ module mole_top (
     logic        is_in1;
     logic        is_in2;
     logic        is_rom_zone;
-
     logic        ram_wren;
     logic        tile_ram_we;
     logic        tilebank_we;
@@ -65,8 +59,12 @@ module mole_top (
             clk_div  <= 4'd0;
             cpu_en   <= 1'b0;
         end else begin
-            clk_div  <= clk_div + 4'd1;
-            cpu_en   <= (clk_div == 4'd0); // Erzeugt genau alle 16 Zyklen einen Puls (Taktdrosselung)
+            if (clk_div == 4'd9) begin
+                clk_div <= 4'd0;
+            end else begin
+                clk_div <= clk_div + 4'd1;
+            end
+            cpu_en <= (clk_div == 4'd0); 
         end
     end
 
