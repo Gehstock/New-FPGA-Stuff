@@ -42,8 +42,8 @@ module warlords_video (
     logic [1:0]  Mr;
     logic [7:0]  Line_ram_addr;
     logic [7:0]  Line_ram_ctr;
-    logic        Line_ram_ctr_load;
-    logic        Line_ram_ctr_clr;
+    logic         Line_ram_ctr_load;
+    logic         Line_ram_ctr_clr;
 
     logic [7:0]  Pf;
     logic [31:0] Pfd;
@@ -74,6 +74,7 @@ module warlords_video (
 
     logic        mob_pixel;
     logic [1:0]  mob_color;
+    logic [1:0]  mob_data;
     logic [7:0]  Colorom_addr;
     logic [3:0]  Colorom_do;
     logic        Mirror;
@@ -218,14 +219,15 @@ module warlords_video (
         .Pf_rom0_out(Pf_rom0_out),
         .Pf_rom1_out(Pf_rom1_out),
         .mob_pixel(mob_pixel),
-        .mob_color(mob_color)
+        .mob_color(mob_color),
+        .mob_data(mob_data)
     );
 
     assign Mirror = 1'b0;
 
     assign Colorom_addr = mob_pixel ?
-                          {1'b1, Mirror, Vcnt[7], Hcnt[8], mob_color[1:0], mob_color[1:0]} :
-                          {1'b0, Mirror, Vcnt[7], Hcnt[8], Gry[1:0], Area[1:0]};
+                          { 1'b1, Mirror, mob_color[1:0], mob_data[1:0], 2'b00 } :
+                          { 1'b0, Mirror, Vcnt[7], Hcnt[8], Gry[1:0], Area[1:0] };
 
     N7 N7_palette (
         .clk  ( Clk12 ),

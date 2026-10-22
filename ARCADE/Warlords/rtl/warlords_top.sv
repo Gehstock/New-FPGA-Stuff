@@ -18,14 +18,13 @@ module warlords_top (
     output logic [5:0]   Audio
 );
 
-
     logic [11:0] Hcnt;
     logic [7:0]  Vcnt;
     logic [23:0] Ab;
     logic [7:0]  Dbout;
     logic [15:0] PfOut;
     logic [7:0]  Pokey1Dout;
-    logic        Phi0;
+    logic        Phi0a;
     logic        Write_n;
     logic        Write2_n;
     logic        Brw_n;
@@ -57,7 +56,7 @@ module warlords_top (
         .Pokey1Dout   ( Pokey1Dout ),
         .Ab           ( Ab ),
         .Dbout        ( Dbout ),
-        .Phi0en       ( Phi0 ),
+        .Phi0en       ( Phi0a ),
         .Write_n      ( Write_n ),
         .Write2_n     ( Write2_n ),
         .Brw_n        ( Brw_n ),
@@ -74,7 +73,7 @@ module warlords_top (
     );
 
     warlords_video video (
-        .Clk12     ( Clk12 ),
+        .Clk12        ( Clk12 ),
         .Reset        ( Reset ),
         .Hcnt         ( Hcnt ),
         .Vcnt         ( Vcnt ),
@@ -89,12 +88,13 @@ module warlords_top (
         .Hsync        ( Hsync ),
         .Vsync        ( Vsync ),
         .Hblank       ( Hblank ),
-        .Vblank       ( Vblank )
+        .Vblank       ( Vblank ),
+        .DBG          ()
     );
 
     warlords_sound audio (
         .Clk12        ( Clk12 ),
-        .Phi0         ( Phi0 ),
+        .Phi0         ( Phi0a ),
         .Reset        ( Reset ),
         .Addr         ( Ab[3:0] ),
         .Din          ( Dbout ),
