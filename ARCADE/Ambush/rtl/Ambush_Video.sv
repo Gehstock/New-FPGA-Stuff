@@ -81,10 +81,6 @@ module Ambush_Video (
         end
     end
 
-    assign video_r = (hblank_reg || vblank_reg) ? 3'd0 : prom_col1_reg[2:0];
-    assign video_g = (hblank_reg || vblank_reg) ? 3'd0 : prom_col1_reg[5:3];
-    assign video_b = (hblank_reg || vblank_reg) ? 3'd0 : {prom_col1_reg[7:6], prom_col1_reg[7]};
-
     always_ff @(posedge clk_sys) begin
         if (reset) begin
             h_cnt <= 9'd0;
@@ -306,5 +302,9 @@ module Ambush_Video (
         .addr(final_color_idx),
         .data(prom_col1_q)
     );
+	 
+	 assign video_r = (hblank_reg || vblank_reg) ? 3'd0 : prom_col1_reg[2:0];
+    assign video_g = (hblank_reg || vblank_reg) ? 3'd0 : prom_col1_reg[5:3];
+    assign video_b = (hblank_reg || vblank_reg) ? 3'd0 : {prom_col1_reg[7:6], 1'b0};
 
 endmodule 
