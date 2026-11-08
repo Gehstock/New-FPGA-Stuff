@@ -1,20 +1,17 @@
-`timescale 1ns / 1ps
-
 module Ambush_Top (
     input  logic        clk_sys,         
     input  logic        reset,
-    
+	 input  logic        test,
     input  logic [7:0]  BUTTONS,
     input  logic [7:0]  JOYSTICK,
     input  logic [7:0]  SW1,
-    
     output logic        hsync,
     output logic        vsync,
     output logic        hblank,
     output logic        vblank,
-    output logic [2:0]  video_r,
-    output logic [2:0]  video_g,
-    output logic [2:0]  video_b,
+    output logic [5:0]  video_r,
+    output logic [5:0]  video_g,
+    output logic [5:0]  video_b,
     output logic [8:0] audio
 );
 
@@ -49,14 +46,8 @@ module Ambush_Top (
     end
 
     logic [15:0] cpu_addr;
-    logic [7:0]  cpu_data_out;
-    logic [7:0]  cpu_data_in;
-    logic        cpu_mreq_n;
-    logic        cpu_iorq_n;
-	 logic        cpu_rd_n;
-    logic        cpu_wr_n;
-    logic        cpu_m1_n;
-    logic        int_n;
+    logic [7:0]  cpu_data_out, cpu_data_in;
+    logic        cpu_mreq_n, cpu_iorq_n, cpu_rd_n, cpu_wr_n, cpu_m1_n, int_n;
 
     T80se cpu_core (
         .RESET_n ( ~reset ),
@@ -79,11 +70,7 @@ module Ambush_Top (
         .DO      ( cpu_data_out )
     );
 
-    logic mem_access;
-    logic mem_write;
-    logic io_access;
-    logic io_write;
-    logic io_read;
+    logic mem_access, mem_write, io_access, io_write, io_read;
 
     assign mem_access = ~cpu_mreq_n;
     assign mem_write  = ~cpu_wr_n && mem_access;
@@ -91,14 +78,7 @@ module Ambush_Top (
     assign io_write  = io_access && ~cpu_wr_n;
     assign io_read   = io_access && ~cpu_rd_n;
 
-    logic rom_en;
-    logic wram_en;
-    logic scroll_en;
-    logic attr_en;
-    logic sprite_en;
-    logic vram_en;
-    logic sw1_en;
-    logic latch_en;
+    logic rom_en, wram_en, scroll_en, attr_en, sprite_en, vram_en, sw1_en, latch_en;
 
     assign rom_en     = mem_access && (cpu_addr >= 16'h0000 && cpu_addr <= 16'h7FFF);
     assign wram_en    = mem_access && (cpu_addr >= 16'h8000 && cpu_addr <= 16'h87FF);
@@ -109,13 +89,7 @@ module Ambush_Top (
     assign sw1_en     = mem_access && (cpu_addr == 16'hC800);
     assign latch_en   = mem_access && (cpu_addr >= 16'hCC00 && cpu_addr <= 16'hCC07);
 
-    logic [7:0] rom_q;
-    logic [7:0] wram_q;
-    logic [7:0] vram_cpu_q;
-    logic [7:0] sprite_cpu_q;
-    logic [7:0] attr_cpu_q;
-    logic [7:0] scroll_cpu_q;
-    logic [7:0] audio_io_q;
+    logic [7:0] rom_q, wram_q, vram_cpu_q, sprite_cpu_q, attr_cpu_q, scroll_cpu_q, audio_io_q;
 
     logic watchdog_en;
     assign watchdog_en = mem_access && (cpu_addr == 16'hA000);
@@ -136,11 +110,7 @@ module Ambush_Top (
         end
     end
 
-
-logic [7:0] rom_cpu1_q;
-    logic [7:0] rom_cpu2_q;
-    logic [7:0] rom_cpu3_q;
-    logic [7:0] rom_cpu4_q;
+    logic [7:0] rom_cpu1_q, rom_cpu2_q, rom_cpu3_q, rom_cpu4_q;
 
     rom_cpu1 u_rom_cpu1 (
         .clk  ( clk_sys ),
@@ -187,10 +157,7 @@ logic [7:0] rom_cpu1_q;
         .q       ( wram_q )
     );
 
-    logic outlatch_0_bit4;
-    logic outlatch_0_bit5;
-    logic outlatch_1_bit5;
-    logic outlatch_1_bit7;
+    logic outlatch_0_bit4, outlatch_0_bit5, outlatch_1_bit5, outlatch_1_bit7;
     logic [2:0] latch_bit;
     
     assign latch_bit = cpu_addr[2:0];
@@ -202,32 +169,49 @@ logic [7:0] rom_cpu1_q;
             outlatch_1_bit5 <= 1'b0;
             outlatch_1_bit7 <= 1'b0;
         end else if (mem_write && latch_en) begin
-            if (latch_bit == 3'd4) outlatch_0_bit4 <= cpu_data_out[0];
-            if (latch_bit == 3'd5) begin
-                outlatch_0_bit5 <= cpu_data_out[0];
-                outlatch_1_bit5 <= cpu_data_out[0];
-            end
-            if (latch_bit == 3'd7) outlatch_1_bit7 <= cpu_data_out[0];
+            if (latch_bit == 3'd4) outlatch_0_bit4 <= cpu_data_out[0]; // Flip Screen
+            if (latch_bit == 3'd5) outlatch_0_bit5 <= cpu_data_out[0]; // Color Bank 1
+            if (latch_bit == 3'd5) outlatch_1_bit5 <= cpu_data_out[1]; // Color Bank 2
+            if (latch_bit == 3'd7) outlatch_1_bit7 <= cpu_data_out[1]; // Coin Counter 2
         end
     end
+
 
     logic [1:0] color_bank;
     assign color_bank = {outlatch_1_bit5, outlatch_0_bit5};
 
 
+//    always_ff @(posedge clk_sys or posedge reset) begin
+//        if (reset) begin
+//            int_n <= 1'b1;
+//        end else begin
+//            if (vblank) begin
+//                int_n <= 1'b0;
+//            end else if (mem_write && latch_en) begin
+//                int_n <= 1'b1;
+//            end else if (io_access) begin
+//                int_n <= 1'b1;
+//            end
+//        end
+//    end
+
+    logic vblank_r;
+    always_ff @(posedge clk_sys) vblank_r <= vblank;
+
     always_ff @(posedge clk_sys or posedge reset) begin
         if (reset) begin
             int_n <= 1'b1;
         end else begin
-            if (vblank) begin
+            if (vblank && !vblank_r) begin // Nur bei steigender Flanke aktivieren
                 int_n <= 1'b0;
             end else if (mem_write && latch_en) begin
-                int_n <= 1'b1;
+                int_n <= 1'b1; // Interrupt ACK über Latch
             end else if (io_access) begin
                 int_n <= 1'b1;
             end
         end
     end
+
 
     Ambush_Audio audio_system (
         .clk_sys     ( clk_sys ),
@@ -249,22 +233,22 @@ logic [7:0] rom_cpu1_q;
         .reset               ( reset ),
         .color_bank          ( color_bank ),
         .vram_cpu_enable     ( vram_en ),
-        .vram_cpu_wren       ( mem_write && vram_en ),
+        .vram_cpu_wren       ( mem_write && vram_en && cen_cpu ), // Mit CPU-Clock-Enable gesichert
         .vram_cpu_addr       ( cpu_addr[9:0] ),
         .vram_cpu_data_in    ( cpu_data_out ),
         .vram_cpu_data_out   ( vram_cpu_q ),
         .sprite_cpu_enable   ( sprite_en ),
-        .sprite_cpu_wren     ( mem_write && sprite_en ),
+        .sprite_cpu_wren     ( mem_write && sprite_en && cen_cpu ), // Mit CPU-Clock-Enable gesichert
         .sprite_cpu_addr     ( cpu_addr[8:0] ),
         .sprite_cpu_data_in  ( cpu_data_out ),
         .sprite_cpu_data_out ( sprite_cpu_q ),
         .attr_cpu_enable     ( attr_en ),
-        .attr_cpu_wren       ( mem_write && attr_en ),
+        .attr_cpu_wren       ( mem_write && attr_en && cen_cpu ), // Mit CPU-Clock-Enable gesichert
         .attr_cpu_addr       ( cpu_addr[7:0] ),
         .attr_cpu_data_in    ( cpu_data_out ),
         .attr_cpu_data_out   ( attr_cpu_q ),
         .scroll_cpu_enable   ( scroll_en ),
-        .scroll_cpu_wren     ( mem_write && scroll_en ),
+        .scroll_cpu_wren     ( mem_write && scroll_en && cen_cpu ), // Mit CPU-Clock-Enable gesichert
         .scroll_cpu_addr     ( cpu_addr[4:0] ),
         .scroll_cpu_data_in  ( cpu_data_out ),
         .scroll_cpu_data_out ( scroll_cpu_q ),
@@ -277,7 +261,8 @@ logic [7:0] rom_cpu1_q;
         .video_b             ( video_b )
     );
 
-    logic internal_dummy;
-    assign internal_dummy = outlatch_0_bit4 & outlatch_1_bit7;
+
+//    logic internal_dummy;
+//    assign internal_dummy = outlatch_0_bit4 & outlatch_1_bit7;
 
 endmodule

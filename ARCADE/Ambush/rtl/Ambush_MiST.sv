@@ -28,6 +28,8 @@ localparam CONF_STR = {
  	"O8,Difficulty,Easy,Hard;",
    "O9,Bonus_Life,120000,80000;",
    "OA,Cabinet,Cocktail,Upright;",
+	"OB,Joy Swap,No,Yes;",
+	"OC,test,off,on;",
 	"T0,Reset;",
 	"V,v1.10.",`BUILD_DATE
 };
@@ -56,7 +58,7 @@ wire        key_pressed;
 wire  [7:0] key_code;
 wire        key_strobe;
 wire  [8:0]	audio;
-wire	[2:0] Vid_r, Vid_g, Vid_b;
+wire	[5:0] Vid_r, Vid_g, Vid_b;
 wire hs, vs, cs, hb, vb;
 
 
@@ -66,6 +68,7 @@ Ambush_Top Ambush_Top (
 	.BUTTONS					(~{m_coin1, m_coin2, m_one_player, m_two_players, m_fire2A, m_fire2B, m_fireA, m_fireB}),
 	.JOYSTICK				(~{m_right2, m_left2, m_down2, m_up2, m_right, m_left, m_down, m_up}),
 	.SW1						(~{status[4:3],status[5],status[6],status[7],status[8],status[9],status[10]} ),
+	.test						(status[12]),
 	.hsync					( hs ),
 	.vsync					( vs ),
 	.hblank					( hb ),
@@ -100,7 +103,7 @@ user_io(
 	
 mist_video #(
 	.COLOR_DEPTH(3), 
-	.SD_HCNT_WIDTH(9)) 
+	.SD_HCNT_WIDTH(11)) 
 mist_video(
 	.clk_sys        ( clk_36           ),
 	.SPI_SCK        ( SPI_SCK          ),
@@ -149,7 +152,7 @@ arcade_inputs inputs (
 	.joystick_1  ( joystick_1  ),
 //	.rotate      ( rotate      ),
 //	.orientation ( 2'b11       ),
-	.joyswap     ( 1'b0        ),
+	.joyswap     ( status[11]  ),
 	.oneplayer   ( 1'b0        ),
 	.controls    ( {m_tilt, m_coin4, m_coin3, m_coin2, m_coin1, m_four_players, m_three_players, m_two_players, m_one_player} ),
 	.player1     ( {m_fireF, m_fireE, m_fireD, m_fireC, m_fireB, m_fireA, m_up, m_down, m_left, m_right} ),

@@ -1,5 +1,3 @@
-`timescale 1ns / 1ps
-
 module Ambush_Audio (
     input  logic        clk_sys,         
     input  logic        reset,
@@ -21,7 +19,7 @@ module Ambush_Audio (
     logic ay1_bdir, ay1_bc1;
     logic ay2_bdir, ay2_bc1;
 	 logic [7:0] ay1_da_out, ay2_da_out;
-	 logic [7:0] ay1_audio_mono, ay2_audio_mono;
+	 logic [7:0] ay1_audio, ay2_audio;
 	 	 
 	 assign ay1_sel = io_en && (io_addr[7:1] == 7'b0000000); 
     assign ay2_sel = io_en && (io_addr[7:1] == 7'b1000000); 
@@ -30,7 +28,7 @@ module Ambush_Audio (
     assign ay1_bc1  = ay1_sel && (io_read || (!port_data_sel && io_write));
     assign ay2_bdir = ay2_sel && io_write;
     assign ay2_bc1  = ay2_sel && (io_read || (!port_data_sel && io_write));
-	 assign audio = {1'b0, ay1_audio_mono} + {1'b0, ay2_audio_mono};
+	 assign audio = {1'b0, ay1_audio} + {1'b0, ay2_audio};
 
     always_ff @(posedge clk_sys or posedge reset) begin
         if (reset) begin
@@ -67,7 +65,7 @@ module Ambush_Audio (
         .I_A9_L     ( 1'b0 ),
         .I_SEL_L    ( 1'b1 ),
         .I_STEREO   ( 1'b0 ),
-        .O_AUDIO    ( ay1_audio_mono ), 
+        .O_AUDIO    ( ay1_audio ), 
         .I_IOA      ( I_BUTTONS ),
         .I_IOB      ( 8'hFF )
     );
@@ -85,7 +83,7 @@ module Ambush_Audio (
         .I_A9_L     ( 1'b0 ),
         .I_SEL_L    ( 1'b1 ),
         .I_STEREO   ( 1'b0 ),
-        .O_AUDIO    ( ay2_audio_mono ), 
+        .O_AUDIO    ( ay2_audio ), 
         .I_IOA      ( I_JOYSTICK ),
         .I_IOB      ( 8'hFF )
     );
