@@ -27,13 +27,13 @@ module Ambush_Video (
     output logic        vsync,
     output logic        hblank,
     output logic        vblank,
-    output logic [2:0]  video_r,
-    output logic [2:0]  video_g,
-    output logic [2:0]  video_b
+    output logic [5:0]  video_r,
+    output logic [5:0]  video_g,
+    output logic [5:0]  video_b
 );
 
     logic [8:0] h_cnt, v_cnt;
-    logic [7:0] prom_col1_q, prom_col1_reg;
+    logic [7:0] prom_col1_q, prom_col1_reg, prom_col2_q, prom_col2_reg;
     logic [4:0] tile_x, tile_y;
     logic [9:0] vram_video_addr;
     logic [7:0] vram_video_data_out, scroll_ram_raw_q_b, scroll_video_data_out;
@@ -65,11 +65,13 @@ module Ambush_Video (
         if (reset) begin
             color_bank_reg <= 2'b00;
             prom_col1_reg <= 8'd0;
+            prom_col2_reg <= 8'd0;
             hblank_reg <= 1'b0;
             vblank_reg <= 1'b0;
             sprite_cpu_bank_d1 <= 2'd0;
         end else begin
             prom_col1_reg <= prom_col1_q;
+            prom_col2_reg <= prom_col2_q;
             hblank_reg <= hblank;
             vblank_reg <= vblank;
 
@@ -287,24 +289,40 @@ module Ambush_Video (
     );
 
     always_comb begin
-        if (tile_priority &&
-            (tile_color_idx[1:0] != 2'b00)) begin
-            final_color_idx = tile_color_idx;
-        end else if (sprite_color_idx[1:0] != 2'b00) begin
-            final_color_idx = sprite_color_idx;
-        end else begin
-            final_color_idx = tile_color_idx;
+        // Fall 1: Das Triebwerk/die Startbahn (Tile) erzwingt die Priorität (tile_priority ist 0)
+        if (tile_priority == 1'b0) begin
+            if (tile_color_idx[1:0] != 2'b00)
+                final_color_idx = tile_color_idx;
+            else if (sprite_color_idx[1:0] != 2'b00)
+                final_color_idx = sprite_color_idx;
+            else
+                final_color_idx = tile_color_idx;
+        end 
+        
+        // Fall 2: Normaler Hintergrund (tile_priority ist 1) -> Sprites haben IMMER Vorrang vor Schwarz!
+        else begin
+            if (sprite_color_idx[1:0] != 2'b00)
+                final_color_idx = sprite_color_idx; // Das Raumschiff setzt sich durch
+            else
+                final_color_idx = tile_color_idx;    // Schwarzer Hintergrund
         end
     end
+
 
     prom_col1 u_prom_col1 (
         .clk(clk_sys),
         .addr(final_color_idx),
         .data(prom_col1_q)
     );
+
+    prom_col2 u_prom_col2 (
+        .clk(clk_sys),
+        .addr(final_color_idx),
+        .data(prom_col2_q)
+    );
 	 
-	 assign video_r = (hblank_reg || vblank_reg) ? 3'd0 : prom_col1_reg[2:0];
-    assign video_g = (hblank_reg || vblank_reg) ? 3'd0 : prom_col1_reg[5:3];
-    assign video_b = (hblank_reg || vblank_reg) ? 3'd0 : {prom_col1_reg[7:6], 1'b0};
+    assign video_r = (hblank_reg || vblank_reg) ? 6'd0 : {prom_col1_reg[2:0], prom_col2_reg[1:0],1'b0};
+    assign video_g = (hblank_reg || vblank_reg) ? 6'd0 : {prom_col1_reg[5:3], prom_col1_reg[4:2]};
+    assign video_b = (hblank_reg || vblank_reg) ? 6'd0 : {prom_col1_reg[7:6], prom_col2_reg[7:5],1'b0};
 
 endmodule 

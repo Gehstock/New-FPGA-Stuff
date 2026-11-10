@@ -102,7 +102,7 @@ user_io(
 	);
 	
 mist_video #(
-	.COLOR_DEPTH(3), 
+	.COLOR_DEPTH(6), 
 	.SD_HCNT_WIDTH(11)) 
 mist_video(
 	.clk_sys        ( clk_36           ),
