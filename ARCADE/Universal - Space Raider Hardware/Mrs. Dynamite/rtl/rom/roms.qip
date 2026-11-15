@@ -1,0 +1,7 @@
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "gfx1_16bit.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "gfx2_16bit.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "prom_10_1.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "prom_10_2.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "prom_10_3.vhdl"]
+
+

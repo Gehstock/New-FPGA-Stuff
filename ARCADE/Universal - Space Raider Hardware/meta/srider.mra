@@ -1,0 +1,44 @@
+<misterromdescription>
+    <name>Scramble Raider</name>
+    <mameversion>0216</mameversion>
+    <setname>sraider</setname>
+    <manufacturer>United Amusements</manufacturer>
+    <rbf>sraider</rbf>
+    
+    <!-- core_mod ID -->
+    <rom index="1"><part>0</part></rom> 
+    
+    <rom index="0" zip="sraider.zip" type="merged|nonmerged">
+        <!-- === CPU1: MAIN CPU (32 KB total) === -->
+        <part name="sraid3.r4"/> <!-- 8KB -->
+        <part name="sraid2.n4"/> <!-- 8KB -->
+        <part name="sraid1.m4"/> <!-- 8KB -->
+        <part name="sraid1.m4"/> <!-- 8KB -->
+
+        <!-- === CPU2: SUB CPU (32 KB total) === -->
+        <part name="sraid-s4.h6"/> <!-- 8KB -->
+        <part name="sraid-s5.j6"/> <!-- 8KB -->
+        <part name="sraid-s6.l6"/> <!-- 8KB -->
+        <part name="sraid-s6.l6"/> <!-- 8KB -->
+
+        <!-- === GRAFIK GFX1 (Tiles): 32-Bit Interleaved  === -->
+        <interleave output="32">
+            <part name="sraid-s0.k6"  map="0011"/>
+            <part name="sraids11.l6"  map="1100"/>
+        </interleave>
+
+        <!-- === GRAFIK GFX2 (Sprites): 32-Bit Interleaved === -->
+        <interleave output="32">
+            <part name="sraid-s7.m2"  map="0011"/> 
+            <part name="sraid-s8.n2"  map="1100"/> 
+        </interleave>
+        <!-- === GRAFIK GFX3 (Grid): 32-Bit Interleaved === -->
+        <interleave output="32">
+            <part name="sraid-s9.f6"  map="1111"/>
+        </interleave>
+        <!-- === PROMS (Color) === -->
+        <part name="srpr10-1.a2"/>
+        <part name="srpr10-2.l3"/>
+        <part name="srpr10-3.c1"/>
+    </rom>
+</misterromdescription>

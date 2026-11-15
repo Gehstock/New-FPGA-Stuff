@@ -1,0 +1,39 @@
+<misterromdescription>
+    <name>Mrs. Dynamite</name>
+    <mameversion>0216</mameversion>
+    <setname>mrsdyna</setname>
+    <manufacturer>United Amusements</manufacturer>
+    <rbf>mrsdyna</rbf>
+    
+    <!-- core_mod ID -->
+    <rom index="1"><part>0</part></rom> 
+    
+    <rom index="0" zip="mrsdyna.zip" type="merged|nonmerged">
+        <!-- === CPU1: MAIN CPU (32 KB total) === -->
+        <part name="mrsd-8203a-r4.f3"/> <!-- 8KB -->
+        <part name="mrsd-8203a-n4.f2"/> <!-- 8KB -->
+        <part name="mrsd-8203a-m4.f1"/> <!-- 8KB -->
+        <part name="mrsd-8203a-m4.f1"/> <!-- 8KB -->
+        <!-- === CPU2: SUB CPU (32 KB total) === -->
+        <part name="mrsd-8203a-h6.f4"/> <!-- 8KB -->
+        <part name="mrsd-8203a-j6.f5"/> <!-- 8KB -->
+        <part name="mrsd-8203a-l6.f6"/> <!-- 8KB -->
+        <part name="mrsd-8203a-l6.f6"/> <!-- 8KB -->
+        <!-- === GRAFIK GFX1 (Tiles): 32-Bit Interleaved  === -->
+        <interleave output="32">
+            <part name="mrsd-8203b-k6.f10"  map="0011"/>
+            <part name="mrsd-8203b-l6.f11"  map="1100"/>
+        </interleave>
+        <!-- === GRAFIK GFX2 (Sprites): 32-Bit Interleaved === -->
+        <interleave output="32">
+            <part name="mrsd-8203b-m2.f7"  map="0011"/> 
+            <part name="mrsd-8203b-n2.f8"  map="1100"/> 
+        </interleave>
+        <!-- === Unused === -->
+	<part repeat="0x2000">FF</part>
+        <!-- === PROMS (Color) === -->
+        <part name="mrsd-10-1.a2"/>
+        <part name="mrsd-10-2.l3"/>
+        <part name="mrsd-10-3.c1"/>
+    </rom>
+</misterromdescription>
