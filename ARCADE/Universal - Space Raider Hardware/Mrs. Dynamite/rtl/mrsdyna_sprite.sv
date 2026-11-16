@@ -243,14 +243,23 @@ module mrsdyna_sprite (
         ma_s[3:0] = {mc_q[2:2] ^ mc_q[4:4], mc_q[1:1] ^ mc_q[4:4], mc_q[0:0] ^ mc_q[4:4], mc_q[5:5] ^ j7_s[0:0]};
     end
 
-    gfx2_16bit  sprite_rom_inst (
-        .clk   (clk_20mhz_i),
-        .addr  (ma_s),
-        .data  (rom_sprite_d_i)
-    );
+logic [7:0] rom_m2_d, rom_n2_d;
+
+gfx2_rom1 sprite_rom_m2 (
+    .clk   (clk_20mhz_i),
+    .addr  (ma_s),
+    .data  (rom_m2_d)
+);
+
+gfx2_rom2 sprite_rom_n2 (
+    .clk   (clk_20mhz_i),
+    .addr  (ma_s),
+    .data  (rom_n2_d)
+);
+
 
     always_comb begin
-        df_v = (!cl_q[4:4]) ? rom_sprite_d_i[7:0] : rom_sprite_d_i[15:8];
+        df_v = (!cl_q[4:4]) ? rom_m2_d : rom_n2_d;
         if (!mc_q[5:5]) begin
             df_muxed_s = {df_v[6:6], df_v[4:4], df_v[2:2], df_v[0:0], df_v[7:7], df_v[5:5], df_v[3:3], df_v[1:1]};
         end else begin

@@ -29,7 +29,7 @@ module sraider_sprite (
     logic [10:0] c_s;
     logic [9:0]  ra_s, cr_s;
     logic [7:0]  rb_s, rc_s, df_muxed_s, lu_d_s, ctrl_lu_d_s, v_cnt_a5_a6_s, a_v, b_v, df_v, h5_n_s, h5_d_s;
-    logic [6:1]  ctrl_lu_q_d_s, ctrl_lu_q;
+    logic [6:0]  ctrl_lu_q_d_s, ctrl_lu_q;
     logic [6:0]  mc_q;
     logic [5:0]  x_s;
     logic [4:1]  e7_q, e7_s, e7_d, e7_q_n, e7_s_n;
@@ -243,15 +243,23 @@ module sraider_sprite (
         ma_s[3:0] = {mc_q[2:2] ^ mc_q[4:4], mc_q[1:1] ^ mc_q[4:4], mc_q[0:0] ^ mc_q[4:4], mc_q[5:5] ^ j7_s[0:0]};
     end
 
-    gfx2_rom_16bit sprite_rom_inst (
-        .clk   (clk_20mhz_i),
-        .clk_en(1'b1),
-        .addr  (ma_s),
-        .data  (rom_sprite_d_i)
-    );
+logic [7:0] rom_m2_d, rom_n2_d;
+
+gfx2_rom1 sprite_rom_m2 (
+    .clk   (clk_20mhz_i),
+    .addr  (ma_s),
+    .data  (rom_m2_d)
+);
+
+gfx2_rom2 sprite_rom_n2 (
+    .clk   (clk_20mhz_i),
+    .addr  (ma_s),
+    .data  (rom_n2_d)
+);
+
 
     always_comb begin
-        df_v = (!cl_q[4:4]) ? rom_sprite_d_i[7:0] : rom_sprite_d_i[15:8];
+        df_v = (!cl_q[4:4]) ? rom_m2_d : rom_n2_d;
         if (!mc_q[5:5]) begin
             df_muxed_s = {df_v[6:6], df_v[4:4], df_v[2:2], df_v[0:0], df_v[7:7], df_v[5:5], df_v[3:3], df_v[1:1]};
         end else begin
@@ -294,7 +302,7 @@ module sraider_sprite (
     );
 
     always_ff @(posedge clk_20mhz_i or negedge por_n_i) begin
-        if (!por_n_i) ctrl_lu_q <= 6'd0;
+        if (!por_n_i) ctrl_lu_q <= 7'd0;
         else          ctrl_lu_q <= ctrl_lu_q_d_s;
     end
 
@@ -303,17 +311,18 @@ module sraider_sprite (
         clk_en_eck_s  = 1'b0;
         clk_en_rd_s   = 1'b0;
         if (clk_en_10mhz_i) begin
-            ctrl_lu_q_d_s = ctrl_lu_d_s[5:0];
-            if (!ctrl_lu_q[1:1] && ctrl_lu_q_d_s[1:1]) clk_en_eck_s = 1'b1;
-            if (!ctrl_lu_q[6:6] && ctrl_lu_q_d_s[6:6]) clk_en_rd_s  = 1'b1;
+            ctrl_lu_q_d_s = ctrl_lu_d_s[6:0];
+            if (!ctrl_lu_q[0] && ctrl_lu_q_d_s[0]) clk_en_eck_s = 1'b1; // Bit 0 (Pin O1)
+            if (!ctrl_lu_q[5] && ctrl_lu_q_d_s[5]) clk_en_rd_s  = 1'b1; // Bit 5 (Pin O6)
         end
     end
 
-    assign shift_oc_n_s = ~(ctrl_lu_q[1:1] & res_n_i);
-    assign ck_inh_s     = ctrl_lu_q[2:2];
-    assign cr_mux_sel_s = ctrl_lu_q[3:3];
-    assign vram_we_n_s  = ctrl_lu_q[4:4];
-    assign rs_enable_s  = ctrl_lu_q[5:5];
+    assign shift_oc_n_s = ~(ctrl_lu_q[0] & res_n_i); // Bit 0 (Pin O1)
+    assign ck_inh_s     = ctrl_lu_q[1];              // Bit 1 (Pin O2)
+    assign cr_mux_sel_s = ctrl_lu_q[2];              // Bit 2 (Pin O3)
+    assign vram_we_n_s  = ctrl_lu_q[3];              // Bit 3 (Pin O4)
+    assign rs_enable_s  = ctrl_lu_q[4];              // Bit 4 (Pin O5)
+
 
     always_ff @(posedge clk_20mhz_i or negedge por_n_i) begin
         if (!por_n_i)            ca_q <= 3'd0;

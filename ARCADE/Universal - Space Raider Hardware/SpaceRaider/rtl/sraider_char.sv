@@ -240,7 +240,7 @@ module sraider_char (
 
     spram #(10,8) char_ram_b (
         .clock  (clk_20mhz_i),
-        .enable (clk_en_4mhz_i & ~char_ram_cs_n_s),
+        .enable (1'b1),//clk_en_4mhz_i & ~char_ram_cs_n_s),
         .address(ram_addr_s),
         .data   (d_from_cpu_i),
         .wren   (~char_ram_we_n_s),
@@ -249,7 +249,7 @@ module sraider_char (
 
     spram #(10,4) col_ram_b (
         .clock  (clk_20mhz_i),
-        .enable (clk_en_4mhz_i & ~col_ram_cs_n_s),
+        .enable (1'b1),//clk_en_4mhz_i & ~col_ram_cs_n_s),
         .address(ram_addr_s),
         .data   (d_from_cpu_i[3:0]),
         .wren   (~col_ram_we_n_s),
