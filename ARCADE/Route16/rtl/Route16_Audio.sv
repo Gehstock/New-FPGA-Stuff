@@ -88,6 +88,6 @@ module Route16_Audio (
 
     logic [10:0] mixed_stratvox;
     assign mixed_stratvox = {1'b0, ay_audio} + {2'b00, sn_audio, 1'b0} + {2'b00, dac_reg, 1'b0};
-    assign audio = (core_mod[2:0] == 3'd2) ? (1'(mixed_stratvox >> 10) ? 10'h3FF : mixed_stratvox[9:0]) : ay_audio;
+    assign audio = (core_mod[2:0] >= 3'd2) ? (1'(mixed_stratvox >> 10) ? 10'h3FF : mixed_stratvox[9:0]) : ay_audio;
 
 endmodule

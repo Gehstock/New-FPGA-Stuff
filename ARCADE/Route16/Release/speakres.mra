@@ -6,7 +6,7 @@
     <manufacturer>Sun Electronics</manufacturer>
     <category>Shooter</category>
     <rbf>Route16</rbf>
-    <rom index="1"><part>2</part></rom>
+    <rom index="1"><part>3</part></rom>
 
     <switches default="20,00" base="16">
         <dip name="Lives"               bits="0,1" ids="3,4,5,6"/>

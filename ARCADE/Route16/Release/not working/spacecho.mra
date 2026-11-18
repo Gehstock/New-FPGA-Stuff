@@ -6,7 +6,7 @@
     <manufacturer>bootleg (Gayton Games)</manufacturer>
     <category>Shooter</category>
     <rbf>Route16</rbf>
-    <rom index="1"><part>2</part></rom>
+    <rom index="1"><part>3</part></rom>
 
     <switches default="00,00">
         <dip bits="0,1"   name="Lives"       ids="3,4,5,6"/>

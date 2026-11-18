@@ -191,10 +191,11 @@ module Route16_Video (
         endcase
     end
 
-    wire       prom1_a7   = (core_mod[2:0] == 3'd2) ? 1'b0 : palreg0[1:1];
-    wire       prom2_a7   = (core_mod[2:0] == 3'd2) ? (pixel1_d1 | pixel1_d0) : palreg1[1:1];
+    wire       prom1_a7   = (core_mod[2:0] >= 3'd2) ? 1'b0 : palreg0[1];
+    wire       prom2_a7   = (core_mod[2:0] >= 3'd2) ? (pixel1_d1 | pixel1_d0) : palreg1[1];
     wire [7:0] prom1_addr = {prom1_a7, palreg0[4:0], pixel1_d1, pixel1_d0};
     wire [7:0] prom2_addr = {prom2_a7, palreg1[4:0], pixel2_d1, pixel2_d0};
+
 
     wire [7:0] prom1_q;
     wire [7:0] prom2_q;

@@ -102,14 +102,24 @@ wire [2:0] r, g, b;
 reg [7:0] p1, p2;
 
 always_comb begin
-	if (core_mod[2:0] >= 3'd2) begin
-		p1 = {m_coin1, service, 1'b0, m_fireA, 2'b00, m_left, m_right};
-		p2 = {m_one_player, m_two_players, 1'b0, m_fire2A, 2'b00, m_left2, m_right2};
-	end else begin
-		p1 = {m_coin1, service, 1'b0, m_fireA, m_down, m_up, m_left, m_right};
-		p2 = {m_one_player, m_two_players, 1'b0, m_fire2A, m_down2, m_up2, m_left2, m_right2};
-	end
+	case (core_mod[2:0])
+		3'd0, 3'd1: begin
+			// Route 16 (0) & Route X (1)
+			p1 = {m_coin1, service, 1'b0, m_fireA, m_down, m_up, m_left, m_right};
+			p2 = {m_one_player, m_two_players, 1'b0, m_fire2A, m_down2, m_up2, m_left2, m_right2};
+		end
+		3'd2, 3'd3: begin
+			// Stratovox / Speak & Rescue (2) & Speak & Help / Space Echo (3)
+			p1 = {m_coin1, service, 1'b0, m_fireA, 2'b00, m_left, m_right};
+			p2 = {m_one_player, m_two_players, 1'b0, m_fire2A, 2'b00, m_left2, m_right2};
+		end
+		default: begin
+			p1 = {m_coin1, service, 1'b0, m_fireA, m_down, m_up, m_left, m_right};
+			p2 = {m_one_player, m_two_players, 1'b0, m_fire2A, m_down2, m_up2, m_left2, m_right2};
+		end
+	endcase
 end
+
 
 reg [7:0] dip_sw[8] = '{8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00,8'h00};
 always @(posedge clk_sys) begin
