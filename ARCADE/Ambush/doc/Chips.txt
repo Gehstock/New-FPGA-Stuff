@@ -1,0 +1,130 @@
+Position	Chip		Function		Marking			Size		Comments
+A1		Crystal					18.432 MHZ
+A2		74LS149*
+A3												and, or,nand,nor?
+A4		74LS74*
+A5/A6		Z80		CPU						DIP40
+A7		AY-3-8912	Sound_IC					DIP28
+A8										DIP16
+
+B1
+B2
+B3		74LS368*							DIP16
+B4		TECFRI-2							DIP20
+B5
+B6
+B7		AY-3-8912	Sound_IC					DIP28
+B8		74LS25_*							DIP16
+
+C1												Tripple and, or
+C2
+C3		TECFRI-3							DIP20
+C4		TECFRI-7	PAL						DIP20
+C5
+C6
+C7		TMM2016		SRAM						DIP24		Main RAM
+C8		74LS25_*							DIP16
+
+
+D1												HEX Inverter!
+D2
+D3		TECFRI-4							DIP20
+D4		TECFRI-6							DIP20
+D5		
+D6		DIPs								DIP16
+D7				C7(Big Chip)
+D8		HEF4066		Quad Bilateral Switch				DIP14
+
+E1		74LS163		VCounter 1					DIP16
+E2
+E3
+E4		TECFRI-5							DIP20		Heat Sink
+E5
+E6
+E7		27C64					Prog Rom N4		DIP28		Extra RAM on BL
+E8		HEF4066		Quad Bilateral Switch				DIP14
+
+F1		74LS163		VCounter 2					DIP16
+F2
+F3		XXXXXXX								XXXXX		Unpopulated
+F4		Am2149*								DIP18		Heat Sink
+F5
+F6
+F7		27C64					Prog Rom N3		DIP28
+F8
+
+G1
+G2
+G3
+G4		Am2149*								DIP18		Heat Sink
+G5
+G6		74LS245								DIP20
+G7		27C64					Prog Rom N2		DIP28
+G8
+
+H1
+H2
+H3
+H4		74LS157*							DIP16
+H5		74LS157*							DIP16
+H6		74LS245		8-Bit-Bus-Transceiver				DIP20
+H7		27C64					Prog Rom N1		DIP28
+H8		N82S1--		Color PROM 256x8				DIP20
+
+I1
+I2
+I3		74LS163		HCounter 1					DIP16
+I4		74LS86								DIP14
+I5
+I6		2114		SRAM								Feeded from H4 H5 and maybe H6
+I7
+I8		N82S1--		Color PROM 256x8	marked OPTIONAL		DIP20
+
+J1												nand, nor
+J2
+J3		74LS163		HCounter 2					DIP16
+J4		74LS86
+J5		74LS194								DIP16
+J6		2114		SRAM								Feeded from H4 H5 and maybe H6
+J7		Am21489		GFX RAM?					DIP18
+J8		74LS(298)*							DIP16
+
+
+K1
+K2
+K3		74LS273*							
+K4		74LS157								DIP16
+K5		74LS194								DIP16	
+K6		TECFRI-9							DIP20
+K7		Am2149		GFX RAM?					DIP18
+K8		74LS157								DIP16
+
+L1		74LS74*								DIP14
+L2		TECFRI-14	PROM 256x8		14.bpr in MAME		DIP20
+L3		74LS158*
+L4		27C64		ROM GFX			fa1.m4 in MAME		DIP28
+L5		TECFRI-8							DIP20
+L6		TECFRI-10							DIP20
+L7		Am21489		GFX RAM?					DIP18
+L8		74LS244								DIP20
+
+M1		74LS74								DIP14
+M2		TECFRI-13	PROM 256x8		13.bpr in MAME		DIP20						
+M3		74LS*								DIP16
+M4				L4(Big Chip)
+M5		74LS194								DIP16
+M6		74LS373*							DIP20
+M7		Am21489		GFX RAM?					DIP18
+M8		74LS174*							DIP16
+
+N1		TECFRI-1							DIP20
+N2		74LS*								DIP16		Maybe 74LS138
+N3		74LS157								DIP16
+N4		27C64		ROM GFX			fa2.n4 in MAME		DIP28
+N5		74LS194								DIP16
+N6		74LS32								DIP14
+N7		TECFRI-11							DIP20
+N8		TECFRI-12							DIP20
+N9				AMP?						DIP16
+
+* not sure

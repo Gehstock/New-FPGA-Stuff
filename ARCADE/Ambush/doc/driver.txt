@@ -1,3 +1,33 @@
+module sind
+
+Ambush.sv
+-Framework toplevel
+-wird zuletzt erzeugt Erklärung folgt
+Ambush_Top.sv
+- enthält CPU Ram Rom Address Decoding, Interrupts
+-instanziert CPU, Audio und Video Module
+Ambush_CPU
+Ambush_Audio
+- alles Audio 2x AY8912   rom ram
+Ambush_Video
+- enthält die Videocounter, Palette, Videoram  etc.
+- originale Video Timings
+-instanziert Sprites und Tiles Module
+Ambush_Sprites
+Ambush_Tiles
+
+
+mainclock   18.432
+audioclock  18.432 / 6 / 2
+videoclock  18.432 / 3
+
+
+
+
+
+
+
+
 
 void ambush_state::main_map(address_map &map)
 {

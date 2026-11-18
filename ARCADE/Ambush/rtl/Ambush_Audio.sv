@@ -13,13 +13,8 @@ module Ambush_Audio (
 );
 
     logic [3:0] audio_clk_div;
-    logic       cen_audio;
-	 logic ay1_sel, ay2_sel;
-    logic port_data_sel;
-    logic ay1_bdir, ay1_bc1;
-    logic ay2_bdir, ay2_bc1;
-	 logic [7:0] ay1_da_out, ay2_da_out;
-	 logic [7:0] ay1_audio, ay2_audio;
+    logic       cen_audio, ay1_sel, ay2_sel, port_data_sel, ay1_bdir, ay1_bc1, ay2_bdir, ay2_bc1;
+	 logic [7:0] ay1_da_out, ay2_da_out, ay1_audio, ay2_audio;
 	 	 
 	 assign ay1_sel = io_en && (io_addr[7:1] == 7'b0000000); 
     assign ay2_sel = io_en && (io_addr[7:1] == 7'b1000000); 

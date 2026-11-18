@@ -83,6 +83,7 @@ module Ambush_Top (
     assign rom_en     = mem_access && (cpu_addr >= 16'h0000 && cpu_addr <= 16'h7FFF);
     assign wram_en    = mem_access && (cpu_addr >= 16'h8000 && cpu_addr <= 16'h87FF);
     assign scroll_en  = mem_access && (cpu_addr >= 16'hC080 && cpu_addr <= 16'hC09F);
+
     assign attr_en    = mem_access && (cpu_addr >= 16'hC100 && cpu_addr <= 16'hC1FF);
     assign sprite_en  = mem_access && (cpu_addr >= 16'hC200 && cpu_addr <= 16'hC3FF);
     assign vram_en    = mem_access && (cpu_addr >= 16'hC400 && cpu_addr <= 16'hC7FF);
