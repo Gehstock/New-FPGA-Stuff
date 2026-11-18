@@ -1,0 +1,47 @@
+<misterromdescription>
+    <name>Route 16 (bootleg)</name>
+    <setname>route16bl</setname>
+    <rbf>Route16</rbf>
+    <mameversion>0260</mameversion>
+    <year>1981</year>
+    <manufacturer>bootleg (Sun Electronics / Tehkan)</manufacturer>
+    <region>World</region>
+    <joystick>4-Way</joystick>
+    <mod>0</mod>
+
+    <switches default="20,00" base="16">
+        <dip name="Lives"      bits="0,1" ids="3,4,5,6"/>
+        <dip name="Coinage"    bits="2,3" ids="1C 1C,2C 1C,1C 2C,Free Play"/>
+        <dip name="Difficulty" bits="4"   ids="Easy,Hard"/>
+        <dip name="Cabinet"    bits="5"   ids="Cocktail,Upright"/>
+        <dip name="Bonus Life" bits="6"   ids="20000,10000"/>
+    </switches>
+
+    <buttons names="Turbo,P1 Start,P2 Start,Coin" default="A,Start,Select,R"/>
+
+    <rom index="0" zip="route16bl.zip" md5="None">
+        <!-- CPU 1 ROMs (0x0000 - 0x2FFF, 12 KB) -->
+        <part name="rt16.0" crc="b1f0f636"/>
+        <part name="rt16.1" crc="3ec52fe5"/>
+        <part name="rt16.2" crc="a8e92871"/>
+        <part name="rt16.3" crc="a0fc9fc5"/>
+        <part name="rt16.4" crc="6dcaf8c4"/>
+        <part name="rt16.5" crc="63d7b05b"/>
+
+        <!-- Padding 0x3000 - 0x3FFF (4 KB) -->
+        <part repeat="0x1000">FF</part>
+
+        <!-- CPU 2 ROMs (0x4000 - 0x5FFF, 8 KB) -->
+        <part name="rt16.6" crc="fef605f3"/>
+        <part name="rt16.7" crc="d0d6c189"/>
+        <part name="rt16.8" crc="defc5797"/>
+        <part name="rt16.9" crc="88d94a66"/>
+
+        <!-- Color PROM 1 (0x6000 - 0x60FF, 256 B) -->
+        <part name="im5623.f10" crc="08793ef7"/>
+
+        <!-- Color PROM 2 (0x6100 - 0x61FF, 256 B) -->
+        <part name="im5623.f12" crc="08793ef7"/>
+    </rom>
+</misterromdescription>
+

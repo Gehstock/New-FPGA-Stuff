@@ -1,0 +1,48 @@
+<misterromdescription>
+    <name>Stratovox</name>
+    <mameversion>0260</mameversion>
+    <setname>stratvox</setname>
+    <year>1980</year>
+    <manufacturer>Taito (Sun Electronics license)</manufacturer>
+    <category>Shooter</category>
+    <rbf>Route16</rbf>
+    <rom index="1"><part>2</part></rom>
+
+    <switches default="20,00" base="16">
+        <dip name="Lives"                 bits="0"   ids="3,5"/>
+        <dip name="Replenish Astronauts"  bits="1"   ids="No,Yes"/>
+        <dip name="2 Attackers At Wave"   bits="2,3" ids="2,3,4,5"/>
+        <dip name="Kidnapping"  bits="4"   ids="Less Often,More Often"/>
+        <dip name="Cabinet"               bits="5"   ids="Cocktail,Upright"/>
+        <dip name="Flip Screen"           bits="6"   ids="Off,On"/>
+        <dip name="Demo Voices"           bits="7"   ids="Off,On"/>
+    </switches>
+
+    <buttons names="Fire,P1 Start,P2 Start,Coin" default="A,Start,Select,R"/>
+
+    <rom index="0" zip="stratvox.zip" md5="none">
+        <!-- CPU 1 ROMs (0x0000 - 0x2FFF, 12 KB) -->
+        <part name="ls01.bin" crc="bf4d582e"/>
+        <part name="ls02.bin" crc="16739dd4"/>
+        <part name="ls03.bin" crc="083c28de"/>
+        <part name="ls04.bin" crc="b0927e3b"/>
+        <part name="ls05.bin" crc="ccd25c4e"/>
+        <part name="ls06.bin" crc="07a907a7"/>
+
+        <!-- Padding 0x3000 - 0x3FFF (4 KB) -->
+        <part repeat="0x1000">FF</part>
+
+        <!-- CPU 2 ROMs (0x4000 - 0x5FFF, 8 KB gespiegelt) -->
+        <part name="ls07.bin" crc="4d333985"/>
+        <part name="ls08.bin" crc="35b753fc"/>
+        <part name="ls07.bin" crc="4d333985"/>
+        <part name="ls08.bin" crc="35b753fc"/>
+
+        <!-- Color PROM 1 (0x6000 - 0x60FF, 256 B) -->
+        <part name="im5623.f10" crc="08793ef7"/>
+
+        <!-- Color PROM 2 (0x6100 - 0x61FF, 256 B) -->
+        <part name="im5623.f12" crc="08793ef7"/>
+    </rom>
+</misterromdescription>
+

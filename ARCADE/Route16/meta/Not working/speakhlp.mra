@@ -1,0 +1,46 @@
+<misterromdescription>
+    <name>Speak and Help</name>
+    <mameversion>0260</mameversion>
+    <setname>speakhlp</setname>
+    <year>1980</year>
+    <manufacturer>Sun Electronics</manufacturer>
+    <category>Shooter</category>
+    <rbf>Route16</rbf>
+    <rom index="1"><part>3</part></rom>
+
+    <switches default="20,00" base="16">
+        <dip name="Lives"               bits="0,1" ids="3,4,5,6"/>
+        <dip name="2 Attackers At Wave" bits="2,3" ids="2,3,4,5"/>
+        <dip name="Bonus Life"          bits="4"   ids="5000,8000"/>
+        <dip name="Cabinet"             bits="5"   ids="Cocktail,Upright"/>
+        <dip name="Flip Screen"         bits="6"   ids="Off,On"/>
+        <dip name="Demo Voices"         bits="7"   ids="Off,On"/>
+    </switches>
+
+    <buttons names="Fire,P1 Start,P2 Start,Coin" default="A,Start,Select,R"/>
+
+    <rom index="0" zip="stratvox.zip|speakhlp.zip" md5="none">
+        <!-- CPU 1 ROMs (0x0000 - 0x2FFF, 12 KB) -->
+        <part name="b1.56t"   crc="ce009d85"/>
+        <part name="b2.5t"    crc="935219f1"/>
+        <part name="b3.45t"   crc="083c28de"/>
+        <part name="b4.4t"    crc="b0927e3b"/>
+        <part name="b5.3t"    crc="ccd25c4e"/>
+        <part name="b6.23t"   crc="a657dd4b"/>
+
+        <!-- Padding 0x3000 - 0x3FFF (4 KB) -->
+        <part repeat="0x1000">FF</part>
+
+        <!-- CPU 2 ROMs (0x4000 - 0x5FFF = 0x0000 - 0x1FFF in CPU2) -->
+        <part name="b07.5b"   crc="c9317d91"/>
+        <part repeat="0x0800">FF</part>
+        <part name="b09.4b"   crc="29310c32"/>
+        <part name="b010.3b"  crc="4d567bc9"/>
+
+        <!-- Color PROM 1 (0x6000 - 0x60FF, 256 B) -->
+        <part name="prom.6k"  crc="08793ef7"/>
+
+        <!-- Color PROM 2 (0x6100 - 0x61FF, 256 B) -->
+        <part name="prom.6m"  crc="08793ef7"/>
+    </rom>
+</misterromdescription>

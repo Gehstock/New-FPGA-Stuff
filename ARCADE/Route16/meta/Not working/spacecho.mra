@@ -1,0 +1,45 @@
+<misterromdescription>
+    <name>Space Echo (bootleg)</name>
+    <mameversion>0260</mameversion>
+    <setname>spacecho</setname>
+    <year>1980</year>
+    <manufacturer>bootleg (Gayton Games)</manufacturer>
+    <category>Shooter</category>
+    <rbf>Route16</rbf>
+    <rom index="1"><part>2</part></rom>
+
+    <switches default="00,00">
+        <dip bits="0,1"   name="Lives"       ids="3,4,5,6"/>
+        <dip bits="2,3"   name="Coinage"     ids="1C 1C,1C 2C,2C 1C,Free Play"/>
+        <dip bits="4"     name="Difficulty"  ids="Normal,Hard"/>
+        <dip bits="5"     name="Bonus Life"  ids="10000,20000"/>
+        <dip bits="6"     name="Cabinet"     ids="Upright,Cocktail"/>
+        <dip bits="7"     name="Demo Sounds" ids="Off,On"/>
+    </switches>
+
+    <rom index="0" zip="stratvox.zip|spacecho.zip" md5="none">
+        <!-- CPU 1 ROMs (0x0000 - 0x2FFF) -->
+        <part name="rom.a0"/>
+        <part name="rom.a1"/>
+        <part name="rom.a2"/>
+        <part name="rom.a3"/>
+        <part name="rom.a4"/>
+        <part name="rom.a5"/>
+
+        <!-- Padding 0x3000 - 0x3FFF (4 KB) -->
+        <part repeat="0x1000">FF</part>
+
+
+        <!-- CPU 2 ROMs (0x4000 - 0x5FFF, 8 KB) -->
+        <part name="rom.b0"/>
+        <part name="rom.b2"/>
+        <part name="rom.b2"/>
+        <part name="rom.b3"/>
+
+        <!-- Color PROM 1 (0x6000 - 0x60FF, 256 B) -->
+        <part name="im5623.f10" crc="08793ef7"/>
+
+        <!-- Color PROM 2 (0x6100 - 0x61FF, 256 B) -->
+        <part name="im5623.f12" crc="08793ef7"/>
+    </rom>
+</misterromdescription>

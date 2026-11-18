@@ -1,0 +1,46 @@
+<misterromdescription>
+    <name>Speak and Rescue</name>
+    <mameversion>0260</mameversion>
+    <setname>speakres</setname>
+    <year>1980</year>
+    <manufacturer>Sun Electronics</manufacturer>
+    <category>Shooter</category>
+    <rbf>Route16</rbf>
+    <rom index="1"><part>2</part></rom>
+
+    <switches default="20,00" base="16">
+        <dip name="Lives"               bits="0,1" ids="3,4,5,6"/>
+        <dip name="2 Attackers At Wave" bits="2,3" ids="2,3,4,5"/>
+        <dip name="Bonus Life"          bits="4"   ids="5000,8000"/>
+        <dip name="Cabinet"             bits="5"   ids="Cocktail,Upright"/>
+        <dip name="Flip Screen"         bits="6"   ids="Off,On"/>
+        <dip name="Demo Voices"         bits="7"   ids="Off,On"/>
+    </switches>
+
+    <buttons names="Fire,P1 Start,P2 Start,Coin" default="A,Start,Select,R"/>
+
+    <rom index="0" zip="stratvox.zip|speakres.zip" md5="none">
+        <!-- CPU 1 ROMs (0x0000 - 0x2FFF, 12 KB) -->
+        <part name="speakres.1" crc="6026e4ea"/>
+        <part name="speakres.2" crc="93f0d4da"/>
+        <part name="speakres.3" crc="a3874304"/>
+        <part name="speakres.4" crc="f484be3a"/>
+        <part name="speakres.5" crc="61b12a67"/>
+        <part name="speakres.6" crc="220e0ab2"/>
+
+        <!-- Padding 0x3000 - 0x3FFF (4 KB) -->
+        <part repeat="0x1000">FF</part>
+
+        <!-- CPU 2 ROMs (0x4000 - 0x5FFF, 8 KB gespiegelt) -->
+        <part name="speakres.7" crc="d417be13"/>
+        <part name="speakres.8" crc="52485d60"/>
+        <part name="speakres.7" crc="d417be13"/>
+        <part name="speakres.8" crc="52485d60"/>
+
+        <!-- Color PROM 1 (0x6000 - 0x60FF, 256 B) -->
+        <part name="im5623.f10" crc="08793ef7"/>
+
+        <!-- Color PROM 2 (0x6100 - 0x61FF, 256 B) -->
+        <part name="im5623.f12" crc="08793ef7"/>
+    </rom>
+</misterromdescription>
