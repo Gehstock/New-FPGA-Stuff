@@ -1,0 +1,8 @@
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) sub_prom_r.vhd]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) sub_prom_g.vhd]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) sub_prom_b.vhd]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) sub_lut_hi.vhd]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) sub_lut_lo.vhd]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) sub_spr_rom0.vhd]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) sub_spr_rom1.vhd]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) sub_spr_rom2.vhd]

@@ -1,0 +1,297 @@
+module Sub_Video (
+    input  logic        clk_sys,
+    input  logic        reset,
+    input  logic        ce_pix,
+    input  logic        m_mreq_n,
+    input  logic        m_wr_n,
+    input  logic [15:0] m_addr,
+    input  logic [7:0]  m_data_out,
+    output logic [7:0]  m_data_in,
+    input  logic        flip_screen,
+    output logic        vblank_irq,
+    output logic [14:0] tile_rom_addr,
+    input  logic [15:0] tile_rom_data,
+    output logic [13:0] spr_rom_addr,
+    input  logic [23:0] spr_rom_data,
+    output logic [3:0]  rgb_r,
+    output logic [3:0]  rgb_g,
+    output logic [3:0]  rgb_b,
+    output logic        hsync,
+    output logic        vsync,
+    output logic        hblank,
+    output logic        vblank
+);
+
+    localparam int H_ACTIVE = 256;
+    localparam int H_FRONT  = 16;
+    localparam int H_SYNC   = 32;
+    localparam int H_TOTAL  = 384;
+
+    localparam int V_ACTIVE = 224;
+    localparam int V_FRONT  = 16;
+    localparam int V_SYNC   = 8;
+    localparam int V_TOTAL  = 256;
+
+    logic [8:0]   hc;
+    logic [8:0]   vc;
+    logic         lb_page;
+    logic         blank;
+
+    logic [8:0]   mod_hc;
+    logic [8:0]   mod_vc;
+
+    logic         attr_ram_we;
+    logic         vram_we;
+    logic         spr0_ram_we;
+    logic         spr1_ram_we;
+    logic         scroll_ram_we;
+
+    logic [7:0]   attr_cpu_data;
+    logic [7:0]   vram_cpu_data;
+    logic [7:0]   spr0_cpu_data;
+    logic [7:0]   spr1_cpu_data;
+    logic [7:0]   scroll_cpu_data;
+
+    logic [9:0]   tile_vaddr;
+    logic [7:0]   tile_vdata;
+    logic [7:0]   tile_attr_data;
+    logic [4:0]   scroll_vaddr;
+    logic [7:0]   scroll_vdata;
+
+    logic [5:0]   spr0_vaddr;
+    logic [7:0]   spr0_vdata;
+    logic [5:0]   spr1_vaddr;
+    logic [7:0]   spr1_vdata;
+
+    logic [2:0]   tile_pixel;
+    logic [6:0]   tile_color;
+
+    logic [7:0]   spr_lb_waddr;
+    logic [9:0]   spr_lb_wdata;
+    logic         spr_lb_we;
+
+    logic         in_window;
+    logic [255:0] window_mask;
+
+    logic [7:0]   lb_waddr_mux;
+    logic [9:0]   lb_wdata_mux;
+    logic         lb_we_mux;
+    logic [9:0]   lb_dout;
+
+    logic [7:0]   lut_hi_data;
+    logic [7:0]   lut_lo_data;
+    logic [7:0]   pal_addr;
+
+    logic [7:0]   prom_r_data;
+    logic [7:0]   prom_g_data;
+    logic [7:0]   prom_b_data;
+
+    always_comb begin
+        blank         = hblank || vblank;
+        hsync         = ~((hc >= (H_ACTIVE + H_FRONT)) && (hc < (H_ACTIVE + H_FRONT + H_SYNC)));
+        vsync         = ~((vc >= (V_ACTIVE + V_FRONT)) && (vc < (V_ACTIVE + V_FRONT + V_SYNC)));
+        hblank        = (hc >= H_ACTIVE);
+        vblank        = (vc >= V_ACTIVE);
+
+        mod_hc        = flip_screen ? (9'd255 - hc) : hc;
+        mod_vc        = flip_screen ? (9'd223 - vc) : vc;
+
+        attr_ram_we   = ~m_mreq_n && ~m_wr_n && (m_addr >= 16'hC000 && m_addr <= 16'hC3FF);
+        vram_we       = ~m_mreq_n && ~m_wr_n && (m_addr >= 16'hC400 && m_addr <= 16'hC7FF);
+        spr0_ram_we   = ~m_mreq_n && ~m_wr_n && (m_addr >= 16'hD000 && m_addr <= 16'hD03F);
+        spr1_ram_we   = ~m_mreq_n && ~m_wr_n && (m_addr >= 16'hD800 && m_addr <= 16'hD83F);
+        scroll_ram_we = ~m_mreq_n && ~m_wr_n && (m_addr >= 16'hD840 && m_addr <= 16'hD85F);
+
+        if (m_addr >= 16'hC000 && m_addr <= 16'hC3FF)      m_data_in = attr_cpu_data;
+        else if (m_addr >= 16'hC400 && m_addr <= 16'hC7FF) m_data_in = vram_cpu_data;
+        else if (m_addr >= 16'hD000 && m_addr <= 16'hD03F) m_data_in = spr0_cpu_data;
+        else if (m_addr >= 16'hD800 && m_addr <= 16'hD83F) m_data_in = spr1_cpu_data;
+        else if (m_addr >= 16'hD840 && m_addr <= 16'hD85F) m_data_in = scroll_cpu_data;
+        else                                               m_data_in = 8'hFF;
+
+        in_window     = flip_screen ? (hc < 9'd32) : (hc >= 9'd224);
+
+        lb_waddr_mux  = (hc < H_ACTIVE) ? hc[7:0] : spr_lb_waddr;
+        lb_wdata_mux  = (hc < H_ACTIVE) ? {tile_color, tile_pixel} : spr_lb_wdata;
+        lb_we_mux     = (hc < H_ACTIVE) ? ce_pix : (spr_lb_we && (spr_lb_wdata[2:0] != 3'b000) && !window_mask[spr_lb_waddr]);
+
+        pal_addr      = {lut_hi_data[3:0], lut_lo_data[3:0]};
+    end
+
+    always_ff @(posedge clk_sys or posedge reset) begin
+        if (reset) begin
+            hc         <= 9'd0;
+            vc         <= 9'd0;
+            lb_page    <= 1'b0;
+            vblank_irq <= 1'b0;
+        end else if (ce_pix) begin
+            if (hc == H_TOTAL - 1) begin
+                hc <= 9'd0;
+                if (vc < V_ACTIVE) begin
+                    lb_page <= ~lb_page;
+                end else begin
+                    lb_page <= 1'b0;
+                end
+                if (vc == V_TOTAL - 1) vc <= 9'd0;
+                else                   vc <= vc + 9'd1;
+            end else begin
+                hc <= hc + 9'd1;
+            end
+
+            if ((vc == V_ACTIVE) && (hc == 9'd0))
+                vblank_irq <= 1'b1;
+            else if ((vc == 9'd0) && (hc == 9'd0))
+                vblank_irq <= 1'b0;
+        end
+    end
+
+    always_ff @(posedge clk_sys) begin
+        if (hc < H_ACTIVE && ce_pix) begin
+            window_mask[hc[7:0]] <= in_window;
+        end
+    end
+
+    dpram #(10, 8) attr_ram (
+        .clk_a   (clk_sys),
+        .enable_a(1'b1),
+        .we_a    (attr_ram_we),
+        .addr_a  (m_addr[9:0]),
+        .din_a   (m_data_out),
+        .dout_a  (attr_cpu_data),
+        .clk_b   (clk_sys),
+        .enable_b(1'b1),
+        .we_b    (1'b0),
+        .addr_b  (tile_vaddr),
+        .din_b   (8'h00),
+        .dout_b  (tile_attr_data)
+    );
+
+    dpram #(10, 8) vram (
+        .clk_a   (clk_sys),
+        .enable_a(1'b1),
+        .we_a    (vram_we),
+        .addr_a  (m_addr[9:0]),
+        .din_a   (m_data_out),
+        .dout_a  (vram_cpu_data),
+        .clk_b   (clk_sys),
+        .enable_b(1'b1),
+        .we_b    (1'b0),
+        .addr_b  (tile_vaddr),
+        .din_b   (8'h00),
+        .dout_b  (tile_vdata)
+    );
+
+    dpram #(6, 8) spr0_ram (
+        .clk_a   (clk_sys),
+        .enable_a(1'b1),
+        .we_a    (spr0_ram_we),
+        .addr_a  (m_addr[5:0]),
+        .din_a   (m_data_out),
+        .dout_a  (spr0_cpu_data),
+        .clk_b   (clk_sys),
+        .enable_b(1'b1),
+        .we_b    (1'b0),
+        .addr_b  (spr0_vaddr),
+        .din_b   (8'h00),
+        .dout_b  (spr0_vdata)
+    );
+
+    dpram #(6, 8) spr1_ram (
+        .clk_a   (clk_sys),
+        .enable_a(1'b1),
+        .we_a    (spr1_ram_we),
+        .addr_a  (m_addr[5:0]),
+        .din_a   (m_data_out),
+        .dout_a  (spr1_cpu_data),
+        .clk_b   (clk_sys),
+        .enable_b(1'b1),
+        .we_b    (1'b0),
+        .addr_b  (spr1_vaddr),
+        .din_b   (8'h00),
+        .dout_b  (spr1_vdata)
+    );
+
+    dpram #(5, 8) scroll_ram (
+        .clk_a   (clk_sys),
+        .enable_a(1'b1),
+        .we_a    (scroll_ram_we),
+        .addr_a  (m_addr[4:0]),
+        .din_a   (m_data_out),
+        .dout_a  (scroll_cpu_data),
+        .clk_b   (clk_sys),
+        .enable_b(1'b1),
+        .we_b    (1'b0),
+        .addr_b  (scroll_vaddr),
+        .din_b   (8'h00),
+        .dout_b  (scroll_vdata)
+    );
+
+    Sub_Tile tile_subsystem (
+        .clk_sys      (clk_sys),
+        .ce_pix       (ce_pix),
+        .flip_screen  (flip_screen),
+        .mod_hc       (mod_hc),
+        .mod_vc       (mod_vc),
+        .vram_addr    (tile_vaddr),
+        .vram_data    (tile_vdata),
+        .attr_data    (tile_attr_data),
+        .scroll_addr  (scroll_vaddr),
+        .scroll_data  (scroll_vdata),
+        .tile_rom_addr(tile_rom_addr),
+        .tile_rom_data(tile_rom_data),
+        .tile_pixel   (tile_pixel),
+        .tile_color   (tile_color)
+    );
+
+    Sub_Sprite sprite_subsystem (
+        .clk_sys     (clk_sys),
+        .ce_pix      (ce_pix),
+        .hc          (hc),
+        .vc          (vc),
+        .flip_screen (flip_screen),
+        .spr0_vaddr  (spr0_vaddr),
+        .spr0_vdata  (spr0_vdata),
+        .spr1_vaddr  (spr1_vaddr),
+        .spr1_vdata  (spr1_vdata),
+        .spr_rom_addr(spr_rom_addr),
+        .spr_rom_data(spr_rom_data),
+        .lb_waddr    (spr_lb_waddr),
+        .lb_wdata    (spr_lb_wdata),
+        .lb_we       (spr_lb_we)
+    );
+
+    dpram #(9, 10) line_buffer (
+        .clk_a   (clk_sys),
+        .enable_a(1'b1),
+        .we_a    (lb_we_mux),
+        .addr_a  ({lb_page, lb_waddr_mux}),
+        .din_a   (lb_wdata_mux),
+        .dout_a  (),
+        .clk_b   (clk_sys),
+        .enable_b(1'b1),
+        .we_b    (1'b0),
+        .addr_b  ({~lb_page, hc[7:0]}),
+        .din_b   (10'd0),
+        .dout_b  (lb_dout)
+    );
+
+    sub_lut_hi lut_hi (.clk(clk_sys), .addr(lb_dout),  .data(lut_hi_data));
+    sub_lut_lo lut_lo (.clk(clk_sys), .addr(lb_dout),  .data(lut_lo_data));
+
+    sub_prom_r prom_red   (.clk(clk_sys), .addr(pal_addr), .data(prom_r_data));
+    sub_prom_g prom_green (.clk(clk_sys), .addr(pal_addr), .data(prom_g_data));
+    sub_prom_b prom_blue  (.clk(clk_sys), .addr(pal_addr), .data(prom_b_data));
+
+    always_ff @(posedge clk_sys) begin
+        if (blank) begin
+            rgb_r <= 4'd0;
+            rgb_g <= 4'd0;
+            rgb_b <= 4'd0;
+        end else begin
+            rgb_r <= prom_r_data[3:0];
+            rgb_g <= prom_g_data[3:0];
+            rgb_b <= prom_b_data[3:0];
+        end
+    end
+
+endmodule
