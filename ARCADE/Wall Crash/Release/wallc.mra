@@ -1,0 +1,18 @@
+<misterromdescription>
+    <name>Wall Crash (set 1)</name>
+    <mameversion>0287</mameversion>
+    <setname>wallc</setname>
+    <year>1984</year>
+    <manufacturer>Midcoin</manufacturer>
+    <rbf>WallCrash</rbf>
+    <rom index="0" zip="wallc.zip" md5="none">
+        <!-- Main CPU ROM (0x00000 - 0x03FFF, 16 KiB) -->
+        <part name="wac05.h7" crc="ab6e472e"/>
+        <part name="wac1-52.h6" crc="988eaa6d"/>
+        <!-- Tile ROMs Plane 0, 1, 2 (0x04000 - 0x06FFF, 3x 4 KiB) -->
+        <part name="wc1.e3" crc="ca5c4b53"/>
+        <part name="wc2.e2" crc="b7f52a59"/>
+        <part name="wc3.e1" crc="f6854b3a"/>
+    </rom>
+
+</misterromdescription>

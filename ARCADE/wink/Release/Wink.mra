@@ -1,0 +1,34 @@
+<misterromdescription>
+    <name>Wink</name>
+    <mameversion>0287</mameversion>
+    <setname>wink</setname>
+    <year>1985</year>
+    <manufacturer>Midcoin</manufacturer>
+    <rbf>Wink</rbf>
+
+    <switches default="10,00">
+        <dip bits="1,2"   name="Lives"             ids="3,5,7,2"/>
+        <dip bits="3,4"   name="Timer Speed"       ids="Normal,Fast,Very Fast,Slow"/>
+        <dip bits="5"     name="Ball Save Barrier" ids="No,Yes"/>
+        <dip bits="6"     name="Demo Sounds"       ids="On,Off"/>
+        <dip bits="9,10"  name="Bonus Life"        ids="60x,80x,100x,None"/>
+        <dip bits="11"    name="Green Balls Bonus" ids="3,4"/>
+        <dip bits="12"    name="1 Credit Award"    ids="Yes,No"/>
+        <dip bits="13"    name="Service Mode"      ids="Off,On"/>
+        <dip bits="14"    name="Summary Screen"    ids="Off,On"/>
+    </switches>
+
+
+    <rom index="0" zip="winka.zip" md5="none">
+        <!-- Main CPU ROM (0x00000 - 0x07FFF, 32 KiB, unverschlüsselt) -->
+        <part name="wink0.bin"/>
+        <part name="wink1.bin"/>
+        <!-- Audio CPU ROM (0x08000 - 0x09FFF, 8 KiB) -->
+        <part name="wink5.bin" crc="c6c9d9cf"/>
+        <!-- Tile ROMs Plane 0, 1, 2 (0x0A000 - 0x0FFFF, 3x 8 KiB) -->
+        <part name="wink4.bin" crc="06dd229b"/>
+        <part name="wink3.bin" crc="2346f50c"/>
+        <part name="wink2.bin" crc="d1cd9d06"/>
+    </rom>
+</misterromdescription>
+
