@@ -1,0 +1,8 @@
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "main_rom.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "prom_sprite_p3.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "prom_tile_m8.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "prom_tile_m9.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "sprite_pattern_rom_high.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "sprite_pattern_rom_low.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "tile_pattern_rom_high.vhdl"]
+set_global_assignment -name VHDL_FILE [file join $::quartus(qip_path) "tile_pattern_rom_low.vhdl"]
